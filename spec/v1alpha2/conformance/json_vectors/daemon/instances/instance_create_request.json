@@ -1,0 +1,7 @@
+{
+  "profile": "default",
+  "count": 1,
+  "env": {
+    "ARP_TOOL_REGISTRY_URL": "http://127.0.0.1:9000"
+  }
+}

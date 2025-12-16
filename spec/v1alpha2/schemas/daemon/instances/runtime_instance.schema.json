@@ -1,0 +1,31 @@
+{
+  "title": "RuntimeInstance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["instance_id", "state", "runtime_type", "runtime_api_base_url"],
+  "properties": {
+    "instance_id": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string",
+      "enum": ["starting", "ready", "busy", "stopping", "stopped", "error"]
+    },
+    "runtime_type": {
+      "type": "string"
+    },
+    "runtime_version": {
+      "type": "string"
+    },
+    "runtime_api_base_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "metadata": {
+      "$ref": "../../common/metadata.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

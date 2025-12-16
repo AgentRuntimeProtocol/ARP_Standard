@@ -1,0 +1,34 @@
+{
+  "title": "InstanceCreateRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile"],
+  "properties": {
+    "profile": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "env": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runtime_type": {
+      "type": "string"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

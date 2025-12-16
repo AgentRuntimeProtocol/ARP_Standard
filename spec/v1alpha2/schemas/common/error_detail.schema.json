@@ -1,0 +1,28 @@
+{
+  "title": "Error",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["code", "message"],
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "retryable": {
+      "type": "boolean"
+    },
+    "cause": {
+      "$ref": "error_cause.schema.json"
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}
+

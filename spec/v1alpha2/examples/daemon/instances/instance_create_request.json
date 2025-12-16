@@ -1,0 +1,10 @@
+{
+  "profile": "default",
+  "count": 1,
+  "env": {
+    "LOG_LEVEL": "info",
+    "ARP_TOOL_REGISTRY_URL": "http://127.0.0.1:9000"
+  },
+  "args": ["--serve"],
+  "runtime_type": "arp-jarvis-runtime"
+}

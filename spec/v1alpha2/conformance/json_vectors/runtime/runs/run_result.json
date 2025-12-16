@@ -1,0 +1,9 @@
+{
+  "run_id": "run_123",
+  "ok": false,
+  "error": {
+    "code": "runtime_error",
+    "message": "Runtime failed"
+  }
+}
+
