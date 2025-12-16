@@ -8,10 +8,19 @@ import warnings
 from pathlib import Path
 from typing import Any
 
-try:
-    import jsonschema
-except ImportError:  # pragma: no cover
-    jsonschema = None
+
+class DependencyMissing(RuntimeError):
+    pass
+
+
+def require_jsonschema() -> Any:
+    try:
+        import jsonschema  # type: ignore
+    except ImportError as exc:  # pragma: no cover
+        raise DependencyMissing(
+            "Missing dependency: jsonschema. Install with: python -m pip install -r tools/validate/requirements.txt"
+        ) from exc
+    return jsonschema
 
 
 def load_json(path: Path) -> Any:
@@ -19,7 +28,7 @@ def load_json(path: Path) -> Any:
         return json.load(file)
 
 
-def validate_one(schema_path: Path, instance_path: Path) -> list[str]:
+def validate_one(schema_path: Path, instance_path: Path, *, jsonschema: Any) -> list[str]:
     schema = load_json(schema_path)
     instance = load_json(instance_path)
 
@@ -36,7 +45,7 @@ def validate_one(schema_path: Path, instance_path: Path) -> list[str]:
     return rendered
 
 
-def validate_tree(payload_root: Path, schemas_root: Path, repo_root: Path) -> list[str]:
+def validate_tree(payload_root: Path, schemas_root: Path, repo_root: Path, *, jsonschema: Any) -> list[str]:
     failures: list[str] = []
     for instance_path in sorted(payload_root.rglob("*.json")):
         rel = instance_path.relative_to(payload_root)
@@ -48,7 +57,7 @@ def validate_tree(payload_root: Path, schemas_root: Path, repo_root: Path) -> li
             continue
 
         try:
-            errors = validate_one(schema_path, instance_path)
+            errors = validate_one(schema_path, instance_path, jsonschema=jsonschema)
         except json.JSONDecodeError as exc:
             failures.append(f"{instance_path.relative_to(repo_root)}: invalid JSON: {exc}")
             continue
@@ -68,11 +77,10 @@ def main() -> int:
     parser.add_argument("--include-examples", action="store_true", help="Also validate spec/<ver>/examples")
     args = parser.parse_args()
 
-    if jsonschema is None:
-        print(
-            "Missing dependency: jsonschema. Install with: python -m pip install -r tools/validate/requirements.txt",
-            file=sys.stderr,
-        )
+    try:
+        jsonschema = require_jsonschema()
+    except DependencyMissing as exc:
+        print(str(exc), file=sys.stderr)
         return 2
 
     repo_root = Path(__file__).resolve().parents[2]
@@ -87,13 +95,13 @@ def main() -> int:
         print(f"Conformance vectors not found: {vectors_root}", file=sys.stderr)
         return 2
 
-    failures = validate_tree(vectors_root, schemas_root, repo_root)
+    failures = validate_tree(vectors_root, schemas_root, repo_root, jsonschema=jsonschema)
     if args.include_examples:
         examples_root = spec_root / "examples"
         if not examples_root.exists():
             print(f"Examples not found: {examples_root}", file=sys.stderr)
             return 2
-        failures.extend(validate_tree(examples_root, schemas_root, repo_root))
+        failures.extend(validate_tree(examples_root, schemas_root, repo_root, jsonschema=jsonschema))
 
     if failures:
         print("Validation failed:", file=sys.stderr)

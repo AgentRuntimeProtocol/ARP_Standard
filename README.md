@@ -11,7 +11,7 @@ This repository is the source of truth for:
 
 - `spec/` — the normative standard (schemas, OpenAPI, examples, conformance)
 - `tools/` — validation, bundling, and codegen helpers
-- `sdks/` — generated SDK artifacts (language-specific)
+- `sdks/` — SDK package scaffolds (generated at build time)
 - `docs/` — standard documentation for contributors/implementers
 
 ## Versioning
@@ -31,3 +31,20 @@ Top-level objects MAY include:
 
 Keys must include a namespace prefix to avoid collisions (`<reverse_dns_or_org>.<key>`).
 
+## Publishing (PyPI)
+
+The Python SDK is published as `arp-standard-py` from `sdks/python/` via GitHub Actions (OIDC / Trusted Publishing).
+
+1. Update versions to match:
+   - `sdks/python/pyproject.toml`
+   - `sdks/python/src/arp_sdk/__init__.py`
+2. Push a tag to trigger the publish workflow:
+
+```bash
+git tag arp-standard-py-v<version>
+git push origin arp-standard-py-v<version>
+```
+
+Notes:
+- The workflow generates the SDK from `spec/` at build time using `tools/codegen/python/generate.py`.
+- Wheels/sdists are uploaded as GitHub Actions run artifacts and attached to the GitHub Release for the tag.

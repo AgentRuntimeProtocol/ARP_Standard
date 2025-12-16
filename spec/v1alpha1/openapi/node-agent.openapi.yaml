@@ -200,4 +200,3 @@ components:
       $ref: ../schemas/runtime/runs/run_status.schema.json
     RunResult:
       $ref: ../schemas/runtime/runs/run_result.schema.json
-

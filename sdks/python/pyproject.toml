@@ -10,7 +10,11 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "Agent Runtime Protocol" }]
-dependencies = []
+dependencies = [
+  "attrs>=22.2.0",
+  "httpx>=0.23.0",
+  "python-dateutil>=2.8.1",
+]
 
 [project.urls]
 Repository = "https://github.com/AgentRuntimeProtocol/ARP_Standard"

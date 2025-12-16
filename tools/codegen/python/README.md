@@ -1,7 +1,31 @@
-# Python Codegen (placeholder)
+# Python Codegen
 
 The canonical source of truth is `spec/`. Python SDK artifacts live under `sdks/python/`.
 
-In `v1alpha1` the SDK is provided as a small, typed client/model layer aligned with the schemas and OpenAPI.
-Future iterations can switch to deterministic codegen from bundled OpenAPI.
+This repo uses `openapi-python-client` to generate the Python SDK clients and models from the OpenAPI files under `spec/<version>/openapi/`.
 
+## Generate
+
+```bash
+python -m pip install -r tools/codegen/python/requirements.txt
+python tools/codegen/python/generate.py --version v1alpha1
+```
+
+Outputs are written under:
+- `sdks/python/src/arp_sdk/tool_registry/`
+- `sdks/python/src/arp_sdk/runtime/`
+- `sdks/python/src/arp_sdk/node_agent/`
+
+These generated directories are intentionally not committed to git (see `.gitignore`).
+
+## Build + validate locally
+
+```bash
+python -m pip install -r tools/codegen/python/requirements-dev.txt
+python tools/codegen/python/build_local.py --version v1alpha1 --clean
+```
+
+## Notes
+
+- The generator bundles local `$ref` JSON Schemas into a single OpenAPI document per service for codegen purposes.
+- CI and release workflows generate the SDK before building/publishing.

@@ -12,3 +12,7 @@ build/
 .coverage
 coverage.xml
 
+# Generated SDK source (local-only; produced by tools/codegen)
+sdks/python/src/arp_sdk/tool_registry/
+sdks/python/src/arp_sdk/runtime/
+sdks/python/src/arp_sdk/node_agent/

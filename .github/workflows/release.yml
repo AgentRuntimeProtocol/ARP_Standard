@@ -18,6 +18,8 @@ jobs:
   build-python-sdk:
     name: Build Python SDK
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -73,6 +75,12 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install build twine
 
+      - name: Install codegen tooling
+        run: python -m pip install -r tools/codegen/python/requirements.txt
+
+      - name: Generate Python SDK
+        run: python tools/codegen/python/generate.py --version v1alpha1
+
       - name: Build sdist + wheel
         working-directory: sdks/python
         run: python -m build --sdist --wheel --outdir dist
@@ -111,3 +119,26 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist
+
+  github-release:
+    name: GitHub Release
+    needs: [build-python-sdk, publish-python-sdk]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-sdk-dist
+          path: dist
+
+      - name: Create GitHub Release (with artifacts)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: arp-standard-py ${{ needs.build-python-sdk.outputs.version }}
+          generate_release_notes: true
+          prerelease: ${{ contains(needs.build-python-sdk.outputs.version, 'a') || contains(needs.build-python-sdk.outputs.version, 'b') || contains(needs.build-python-sdk.outputs.version, 'rc') }}
+          files: dist/*
+          fail_on_unmatched_files: true
