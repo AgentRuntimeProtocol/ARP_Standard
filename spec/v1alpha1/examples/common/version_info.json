@@ -1,0 +1,11 @@
+{
+  "service_name": "arp-jarvis-tool-registry",
+  "service_version": "0.1.0",
+  "supported_api_versions": ["v1alpha1"],
+  "build": {
+    "commit": "abc123",
+    "built_at": "2025-01-01T00:00:00Z",
+    "dirty": false
+  }
+}
+

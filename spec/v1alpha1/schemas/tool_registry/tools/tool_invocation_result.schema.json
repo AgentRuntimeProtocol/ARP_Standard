@@ -1,0 +1,29 @@
+{
+  "title": "ToolInvocationResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invocation_id", "ok"],
+  "properties": {
+    "invocation_id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "error": {
+      "$ref": "../../common/error_detail.schema.json"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}
+

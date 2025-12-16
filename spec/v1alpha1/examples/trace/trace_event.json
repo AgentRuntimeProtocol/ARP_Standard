@@ -1,0 +1,12 @@
+{
+  "run_id": "run_123",
+  "seq": 1,
+  "time": "2025-01-01T00:00:00Z",
+  "level": "info",
+  "type": "step",
+  "data": {
+    "name": "plan",
+    "detail": "generated initial plan"
+  }
+}
+

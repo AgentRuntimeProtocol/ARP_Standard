@@ -1,0 +1,113 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "arp-standard-py-v*"
+  workflow_dispatch:
+    inputs:
+      publish_to:
+        description: "Publish destination"
+        type: choice
+        options:
+          - testpypi
+          - pypi
+        default: testpypi
+
+jobs:
+  build-python-sdk:
+    name: Build Python SDK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify version and tag
+        id: versions
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          import tomllib
+          from pathlib import Path
+
+          pyproject_path = Path("sdks/python/pyproject.toml")
+          init_path = Path("sdks/python/src/arp_sdk/__init__.py")
+
+          pyproject = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
+          pkg_version = pyproject["project"]["version"]
+
+          init_text = init_path.read_text(encoding="utf-8")
+          match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', init_text)
+          if not match:
+              raise SystemExit(f"Unable to find __version__ in {init_path}")
+          init_version = match.group(1)
+
+          if init_version != pkg_version:
+              raise SystemExit(
+                  f"Version mismatch: pyproject.toml={pkg_version} vs arp_sdk.__version__={init_version}"
+              )
+
+          tag = os.environ.get("GITHUB_REF_NAME", "")
+          prefix = "arp-standard-py-v"
+          if tag.startswith(prefix):
+              tag_version = tag.removeprefix(prefix)
+              if tag_version != pkg_version:
+                  raise SystemExit(
+                      f"Tag/version mismatch: tag={tag_version} vs pyproject.toml={pkg_version}"
+                  )
+
+          output_path = os.environ.get("GITHUB_OUTPUT")
+          if output_path:
+              with open(output_path, "a", encoding="utf-8") as f:
+                  f.write(f"version={pkg_version}\n")
+          print(f"Python SDK version: {pkg_version}")
+          PY
+
+      - name: Install build tooling
+        working-directory: sdks/python
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install build twine
+
+      - name: Build sdist + wheel
+        working-directory: sdks/python
+        run: python -m build --sdist --wheel --outdir dist
+
+      - name: Check dist metadata
+        working-directory: sdks/python
+        run: python -m twine check dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-sdk-dist
+          path: sdks/python/dist/*
+
+  publish-python-sdk:
+    name: Publish Python SDK
+    needs: build-python-sdk
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-sdk-dist
+          path: dist
+
+      - name: Publish to TestPyPI (trusted publishing)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish to PyPI (trusted publishing)
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist

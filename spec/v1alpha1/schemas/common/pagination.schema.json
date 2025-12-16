@@ -1,0 +1,19 @@
+{
+  "title": "Pagination",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "next_page_token": {
+      "type": "string"
+    },
+    "page_size": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}
+

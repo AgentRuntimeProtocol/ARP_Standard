@@ -1,0 +1,164 @@
+openapi: 3.0.3
+info:
+  title: ARP Runtime API
+  version: v1alpha1
+paths:
+  /v1alpha1/health:
+    get:
+      summary: Health
+      responses:
+        "200":
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/version:
+    get:
+      summary: Version
+      responses:
+        "200":
+          description: Version response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/runs:
+    post:
+      summary: Create run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunRequest"
+      responses:
+        "200":
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/runs/{run_id}:
+    get:
+      summary: Get run status
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/runs/{run_id}/result:
+    get:
+      summary: Get run result
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResult"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/runs/{run_id}:cancel:
+    post:
+      summary: Cancel run (optional)
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1alpha1/runs/{run_id}/events:
+    get:
+      summary: Stream run events (optional, SSE)
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Server-sent events stream. Each event line contains a JSON RunEvent payload.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  schemas:
+    Health:
+      $ref: ../schemas/common/health.schema.json
+    VersionInfo:
+      $ref: ../schemas/common/version_info.schema.json
+    ErrorEnvelope:
+      $ref: ../schemas/common/error.schema.json
+    RunRequest:
+      $ref: ../schemas/runtime/runs/run_request.schema.json
+    RunStatus:
+      $ref: ../schemas/runtime/runs/run_status.schema.json
+    RunResult:
+      $ref: ../schemas/runtime/runs/run_result.schema.json
+    RunEvent:
+      $ref: ../schemas/runtime/runs/run_event.schema.json
+

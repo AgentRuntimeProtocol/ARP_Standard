@@ -1,0 +1,9 @@
+name: codegen-python
+on:
+  workflow_dispatch:
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Python SDK codegen is a placeholder; see tools/codegen/python/README.md"
+

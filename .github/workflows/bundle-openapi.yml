@@ -1,0 +1,9 @@
+name: bundle-openapi
+on:
+  workflow_dispatch:
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "OpenAPI bundling is toolchain-dependent; see tools/bundle/README.md"
+
