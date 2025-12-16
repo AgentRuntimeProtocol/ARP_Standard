@@ -8,7 +8,7 @@ This repo uses `openapi-python-client` to generate the Python SDK clients and mo
 
 ```bash
 python -m pip install -r tools/codegen/python/requirements.txt
-python tools/codegen/python/generate.py --version v1alpha1
+python tools/codegen/python/generate.py --version v1alpha2
 ```
 
 Outputs are written under:
@@ -22,7 +22,7 @@ These generated directories are intentionally not committed to git (see `.gitign
 
 ```bash
 python -m pip install -r tools/codegen/python/requirements-dev.txt
-python tools/codegen/python/build_local.py --version v1alpha1 --clean
+python tools/codegen/python/build_local.py --version v1alpha2 --clean
 ```
 
 ## Notes

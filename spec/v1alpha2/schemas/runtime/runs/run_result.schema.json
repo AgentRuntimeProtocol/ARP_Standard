@@ -1,0 +1,35 @@
+{
+  "title": "RunResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "ok"],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "ok": {
+      "type": "boolean"
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "error": {
+      "$ref": "../../common/error_detail.schema.json"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "$ref": "../../common/resource_ref.schema.json"
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}
+

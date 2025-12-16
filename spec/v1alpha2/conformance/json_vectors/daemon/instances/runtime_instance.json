@@ -1,0 +1,6 @@
+{
+  "instance_id": "inst_001",
+  "state": "ready",
+  "runtime_type": "arp-jarvis-runtime",
+  "runtime_api_base_url": "http://127.0.0.1:7777"
+}

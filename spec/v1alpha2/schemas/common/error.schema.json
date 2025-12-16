@@ -1,0 +1,15 @@
+{
+  "title": "ErrorEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["error"],
+  "properties": {
+    "error": {
+      "$ref": "error_detail.schema.json"
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}
+
