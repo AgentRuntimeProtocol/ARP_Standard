@@ -41,10 +41,11 @@ The Python SDK is published as `arp-standard-py` from `sdks/python/` via GitHub 
 2. Push a tag to trigger the publish workflow:
 
 ```bash
-git tag arp-standard-py-v<version>
-git push origin arp-standard-py-v<version>
+git tag v<version>
+git push origin v<version>
 ```
 
 Notes:
+- The tag must point to a commit contained in `origin/main` (the workflow enforces this).
 - The workflow generates the SDK from `spec/` at build time using `tools/codegen/python/generate.py`.
 - Wheels/sdists are uploaded as GitHub Actions run artifacts and attached to the GitHub Release for the tag.

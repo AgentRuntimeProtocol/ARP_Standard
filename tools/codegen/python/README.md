@@ -14,7 +14,7 @@ python tools/codegen/python/generate.py --version v1alpha1
 Outputs are written under:
 - `sdks/python/src/arp_sdk/tool_registry/`
 - `sdks/python/src/arp_sdk/runtime/`
-- `sdks/python/src/arp_sdk/node_agent/`
+- `sdks/python/src/arp_sdk/daemon/`
 
 These generated directories are intentionally not committed to git (see `.gitignore`).
 

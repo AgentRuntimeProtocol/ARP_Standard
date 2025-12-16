@@ -182,9 +182,9 @@ def main() -> int:
             openapi_root / "runtime.openapi.yaml",
             sdk_src_root / "runtime",
         ),
-        "node_agent": (
-            openapi_root / "node-agent.openapi.yaml",
-            sdk_src_root / "node_agent",
+        "daemon": (
+            openapi_root / "daemon.openapi.yaml",
+            sdk_src_root / "daemon",
         ),
     }
 

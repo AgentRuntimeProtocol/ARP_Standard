@@ -3,7 +3,7 @@ name: release
 on:
   push:
     tags:
-      - "arp-standard-py-v*"
+      - "v*"
   workflow_dispatch:
     inputs:
       publish_to:
@@ -22,6 +22,17 @@ jobs:
       version: ${{ steps.versions.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce origin/main
+        run: |
+          git fetch origin main
+          COMMIT="$(git rev-parse "${GITHUB_SHA}^{commit}")"
+          if ! git merge-base --is-ancestor "$COMMIT" "origin/main"; then
+            echo "Ref ${GITHUB_REF_NAME} ($COMMIT) is not contained in origin/main"
+            exit 1
+          fi
 
       - uses: actions/setup-python@v5
         with:
@@ -53,9 +64,12 @@ jobs:
                   f"Version mismatch: pyproject.toml={pkg_version} vs arp_sdk.__version__={init_version}"
               )
 
-          tag = os.environ.get("GITHUB_REF_NAME", "")
-          prefix = "arp-standard-py-v"
-          if tag.startswith(prefix):
+          ref = os.environ.get("GITHUB_REF", "")
+          if ref.startswith("refs/tags/"):
+              tag = os.environ.get("GITHUB_REF_NAME", "")
+              prefix = "v"
+              if not tag.startswith(prefix):
+                  raise SystemExit(f"Expected tag to start with '{prefix}': {tag}")
               tag_version = tag.removeprefix(prefix)
               if tag_version != pkg_version:
                   raise SystemExit(
@@ -137,7 +151,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: arp-standard-py ${{ needs.build-python-sdk.outputs.version }}
+          name: ${{ github.ref_name }}
           generate_release_notes: true
           prerelease: ${{ contains(needs.build-python-sdk.outputs.version, 'a') || contains(needs.build-python-sdk.outputs.version, 'b') || contains(needs.build-python-sdk.outputs.version, 'rc') }}
           files: dist/*

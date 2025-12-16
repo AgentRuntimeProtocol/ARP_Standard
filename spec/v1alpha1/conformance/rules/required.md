@@ -14,7 +14,7 @@ Runtime MUST implement:
 - `GET /v1alpha1/runs/{run_id}`
 - `GET /v1alpha1/runs/{run_id}/result`
 
-Node Agent MUST implement:
+Daemon MUST implement:
 - `GET /v1alpha1/instances`
 - `POST /v1alpha1/instances`
 - `DELETE /v1alpha1/instances/{instance_id}`
@@ -25,5 +25,4 @@ Node Agent MUST implement:
 Optional (v1alpha1):
 - `POST /v1alpha1/runs/{run_id}:cancel` (runtime)
 - `GET /v1alpha1/runs/{run_id}/events` (runtime)
-- `GET /v1alpha1/runs/{run_id}/trace` (node agent)
-
+- `GET /v1alpha1/runs/{run_id}/trace` (daemon)

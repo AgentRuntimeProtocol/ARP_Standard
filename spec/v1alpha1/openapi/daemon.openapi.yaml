@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: ARP Node Agent API
+  title: ARP Daemon API
   version: v1alpha1
 paths:
   /v1alpha1/health:
@@ -189,11 +189,11 @@ components:
     ErrorEnvelope:
       $ref: ../schemas/common/error.schema.json
     RuntimeInstance:
-      $ref: ../schemas/node_agent/instances/runtime_instance.schema.json
+      $ref: ../schemas/daemon/instances/runtime_instance.schema.json
     InstanceCreateRequest:
-      $ref: ../schemas/node_agent/instances/instance_create_request.schema.json
+      $ref: ../schemas/daemon/instances/instance_create_request.schema.json
     InstanceCreateResponse:
-      $ref: ../schemas/node_agent/instances/instance_create_response.schema.json
+      $ref: ../schemas/daemon/instances/instance_create_response.schema.json
     RunRequest:
       $ref: ../schemas/runtime/runs/run_request.schema.json
     RunStatus:
