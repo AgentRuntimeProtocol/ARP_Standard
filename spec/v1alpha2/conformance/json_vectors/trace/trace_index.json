@@ -1,9 +1,0 @@
-{
-  "runs": [
-    {
-      "run_id": "run_123",
-      "trace_uri": "file:///var/lib/arp/traces/run_123.ndjson"
-    }
-  ]
-}
-

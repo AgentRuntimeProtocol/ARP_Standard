@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: ARP Daemon API
+  version: v1beta1
+paths:
+  /v1beta1/health:
+    get:
+      summary: Health
+      responses:
+        "200":
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/version:
+    get:
+      summary: Version
+      responses:
+        "200":
+          description: Version response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/instances:
+    get:
+      summary: List runtime instances
+      responses:
+        "200":
+          description: Runtime instance list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceListResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Create runtime instances
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstanceCreateRequest"
+      responses:
+        "200":
+          description: Create response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceCreateResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/instances/{instance_id}:
+    delete:
+      summary: Delete runtime instance
+      parameters:
+        - name: instance_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/runs:
+    get:
+      summary: List runs
+      parameters:
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+        - name: page_token
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunListResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Submit run (async)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunRequest"
+      responses:
+        "202":
+          description: Run accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/runs/{run_id}:
+    get:
+      summary: Get run status
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunStatus"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/runs/{run_id}/result:
+    get:
+      summary: Get run result
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunResult"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/runs/{run_id}/trace:
+    get:
+      summary: Get run trace (optional)
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Trace events or trace pointer.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TraceResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  schemas:
+    Health:
+      $ref: ../schemas/common/health.schema.json
+    VersionInfo:
+      $ref: ../schemas/common/version_info.schema.json
+    ErrorEnvelope:
+      $ref: ../schemas/common/error.schema.json
+    RuntimeInstance:
+      $ref: ../schemas/daemon/instances/runtime_instance.schema.json
+    InstanceCreateRequest:
+      $ref: ../schemas/daemon/instances/instance_create_request.schema.json
+    InstanceCreateResponse:
+      $ref: ../schemas/daemon/instances/instance_create_response.schema.json
+    InstanceListResponse:
+      $ref: ../schemas/daemon/instances/instance_list_response.schema.json
+    RunRequest:
+      $ref: ../schemas/runtime/runs/run_request.schema.json
+    RunStatus:
+      $ref: ../schemas/runtime/runs/run_status.schema.json
+    RunListResponse:
+      $ref: ../schemas/daemon/runs/run_list_response.schema.json
+    RunResult:
+      $ref: ../schemas/runtime/runs/run_result.schema.json
+    TraceResponse:
+      $ref: ../schemas/daemon/runs/trace_response.schema.json

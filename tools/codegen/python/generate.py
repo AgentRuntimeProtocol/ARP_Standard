@@ -163,7 +163,7 @@ def generate_service(*, openapi_path: Path, output_dir: Path, config_path: Path)
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", default="v1alpha2", help="Spec version directory (default: v1alpha2)")
+    parser.add_argument("--version", default="v1beta1", help="Spec version directory (default: v1beta1)")
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[3]

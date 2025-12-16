@@ -9,4 +9,4 @@ __all__ = [
     "tool_registry", # pyright: ignore[reportUnsupportedDunderAll]
 ]
 
-__version__ = "1.0.0a2"
+__version__ = "1.0.0b1"

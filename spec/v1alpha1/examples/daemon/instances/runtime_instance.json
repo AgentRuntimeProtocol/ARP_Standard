@@ -1,8 +1,0 @@
-{
-  "instance_id": "inst_001",
-  "state": "ready",
-  "runtime_version": "0.1.0",
-  "runtime_type": "python",
-  "address": "http://127.0.0.1:7777"
-}
-

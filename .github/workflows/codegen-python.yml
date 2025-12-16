@@ -14,16 +14,23 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Create venv
+        run: python -m venv .venv
+
       - name: Install codegen + build tooling
-        run: python -m pip install -r tools/codegen/python/requirements-dev.txt
+        run: .venv/bin/python -m pip install --upgrade pip && .venv/bin/python -m pip install -r tools/codegen/python/requirements-dev.txt
 
       - name: Generate Python SDK
-        run: python tools/codegen/python/generate.py --version v1alpha2
+        run: .venv/bin/python tools/codegen/python/generate.py --version v1beta1
+
+      - name: Install Python SDK (dev)
+        run: .venv/bin/python -m pip install -e "sdks/python[dev]"
+
+      - name: Pyright
+        run: .venv/bin/pyright -p sdks/python/pyrightconfig.json
 
       - name: Build sdist + wheel
-        working-directory: sdks/python
-        run: python -m build --sdist --wheel --outdir dist
+        run: .venv/bin/python -m build sdks/python --sdist --wheel --outdir sdks/python/dist
 
       - name: Check dist metadata
-        working-directory: sdks/python
-        run: python -m twine check dist/*
+        run: .venv/bin/python -m twine check sdks/python/dist/*
