@@ -1,0 +1,33 @@
+{
+  "title": "ToolInvocationRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["invocation_id", "args"],
+  "anyOf": [{ "required": ["tool_id"] }, { "required": ["tool_name"] }],
+  "properties": {
+    "invocation_id": {
+      "type": "string"
+    },
+    "tool_id": {
+      "type": "string"
+    },
+    "tool_name": {
+      "type": "string"
+    },
+    "args": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "caller": {
+      "$ref": "../../common/resource_ref.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}
+

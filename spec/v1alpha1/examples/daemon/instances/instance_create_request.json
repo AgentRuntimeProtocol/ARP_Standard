@@ -1,0 +1,12 @@
+{
+  "profile": "default",
+  "count": 1,
+  "env": {
+    "LOG_LEVEL": "info"
+  },
+  "args": ["--serve"],
+  "labels": {
+    "pool": "local"
+  }
+}
+

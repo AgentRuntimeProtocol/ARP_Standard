@@ -1,0 +1,29 @@
+name: codegen-python
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  codegen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install codegen + build tooling
+        run: python -m pip install -r tools/codegen/python/requirements-dev.txt
+
+      - name: Generate Python SDK
+        run: python tools/codegen/python/generate.py --version v1alpha1
+
+      - name: Build sdist + wheel
+        working-directory: sdks/python
+        run: python -m build --sdist --wheel --outdir dist
+
+      - name: Check dist metadata
+        working-directory: sdks/python
+        run: python -m twine check dist/*
