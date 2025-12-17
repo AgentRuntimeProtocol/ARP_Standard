@@ -4,9 +4,14 @@ __all__ = [
     "__version__",
     "clients", # pyright: ignore[reportUnsupportedDunderAll]
     "daemon", # pyright: ignore[reportUnsupportedDunderAll]
+    "errors", # pyright: ignore[reportUnsupportedDunderAll]
     "models", # pyright: ignore[reportUnsupportedDunderAll]
     "runtime", # pyright: ignore[reportUnsupportedDunderAll]
     "tool_registry", # pyright: ignore[reportUnsupportedDunderAll]
 ]
 
-__version__ = "1.0.0b1"
+__version__ = "1.0.0b2"
+
+from .errors import ArpApiError  # noqa: E402
+
+__all__.append("ArpApiError")

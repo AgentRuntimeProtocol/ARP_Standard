@@ -6,6 +6,8 @@ paths:
   /v1beta1/health:
     get:
       summary: Health
+      operationId: health
+      tags: [health]
       responses:
         "200":
           description: Health response
@@ -22,6 +24,8 @@ paths:
   /v1beta1/version:
     get:
       summary: Version
+      operationId: version
+      tags: [version]
       responses:
         "200":
           description: Version response
@@ -38,6 +42,8 @@ paths:
   /v1beta1/tools:
     get:
       summary: List tools
+      operationId: list_tools
+      tags: [tools]
       responses:
         "200":
           description: Tool list
@@ -56,6 +62,8 @@ paths:
   /v1beta1/tools/{tool_id}:
     get:
       summary: Get tool
+      operationId: get_tool
+      tags: [tools]
       parameters:
         - name: tool_id
           in: path
@@ -78,6 +86,8 @@ paths:
   /v1beta1/tool-invocations:
     post:
       summary: Invoke tool
+      operationId: invoke_tool
+      tags: [invocations]
       requestBody:
         required: true
         content:

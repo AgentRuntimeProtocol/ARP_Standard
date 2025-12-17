@@ -1,0 +1,23 @@
+{
+  "title": "InstanceRegisterRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runtime_api_endpoint"],
+  "properties": {
+    "runtime_api_endpoint": {
+      "$ref": "../../common/endpoint_locator.schema.json"
+    },
+    "runtime_profile": {
+      "type": "string"
+    },
+    "runtime_name": {
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "../../common/metadata.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

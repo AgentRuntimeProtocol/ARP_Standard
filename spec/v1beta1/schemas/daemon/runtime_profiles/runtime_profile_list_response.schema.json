@@ -1,0 +1,20 @@
+{
+  "title": "RuntimeProfileListResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profiles"],
+  "properties": {
+    "profiles": {
+      "type": "array",
+      "items": {
+        "$ref": "runtime_profile.schema.json"
+      }
+    },
+    "pagination": {
+      "$ref": "../../common/pagination.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

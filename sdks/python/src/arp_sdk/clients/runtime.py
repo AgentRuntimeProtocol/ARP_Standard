@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from arp_sdk.runtime import AuthenticatedClient, Client
+from arp_sdk.runtime.client import AuthenticatedClient, Client
 
 __all__ = [
     "AuthenticatedClient",

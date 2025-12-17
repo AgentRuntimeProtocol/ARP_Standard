@@ -6,6 +6,8 @@ paths:
   /v1beta1/health:
     get:
       summary: Health
+      operationId: health
+      tags: [health]
       responses:
         "200":
           description: Health response
@@ -22,6 +24,8 @@ paths:
   /v1beta1/version:
     get:
       summary: Version
+      operationId: version
+      tags: [version]
       responses:
         "200":
           description: Version response
@@ -38,6 +42,8 @@ paths:
   /v1beta1/runs:
     post:
       summary: Create run
+      operationId: create_run
+      tags: [runs]
       requestBody:
         required: true
         content:
@@ -60,6 +66,8 @@ paths:
   /v1beta1/runs/{run_id}:
     get:
       summary: Get run status
+      operationId: get_run_status
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -82,6 +90,8 @@ paths:
   /v1beta1/runs/{run_id}/result:
     get:
       summary: Get run result
+      operationId: get_run_result
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -104,6 +114,8 @@ paths:
   /v1beta1/runs/{run_id}:cancel:
     post:
       summary: Cancel run (optional)
+      operationId: cancel_run
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -126,6 +138,8 @@ paths:
   /v1beta1/runs/{run_id}/events:
     get:
       summary: Stream run events (optional, SSE)
+      operationId: stream_run_events
+      tags: [runs]
       parameters:
         - name: run_id
           in: path

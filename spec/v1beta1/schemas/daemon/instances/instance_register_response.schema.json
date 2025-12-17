@@ -1,0 +1,14 @@
+{
+  "title": "InstanceRegisterResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["instance"],
+  "properties": {
+    "instance": {
+      "$ref": "runtime_instance.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

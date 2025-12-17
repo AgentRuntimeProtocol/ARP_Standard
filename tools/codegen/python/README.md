@@ -3,6 +3,7 @@
 The canonical source of truth is `spec/`. Python SDK artifacts live under `sdks/python/`.
 
 This repo uses `openapi-python-client` to generate the Python SDK clients and models from the OpenAPI files under `spec/<version>/openapi/`.
+After low-level generation, the pipeline also generates a small facade layer (`sdk.py`) per service and rewrites each service package’s `__init__.py` to export the curated facade surface.
 
 ## Generate
 

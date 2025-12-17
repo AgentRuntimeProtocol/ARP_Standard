@@ -2,7 +2,7 @@
   "title": "RuntimeInstance",
   "type": "object",
   "additionalProperties": false,
-  "required": ["instance_id", "state", "runtime_type", "runtime_api_base_url"],
+  "required": ["instance_id", "state", "runtime_api_endpoint"],
   "properties": {
     "instance_id": {
       "type": "string"
@@ -11,15 +11,21 @@
       "type": "string",
       "enum": ["starting", "ready", "busy", "stopping", "stopped", "error"]
     },
-    "runtime_type": {
+    "managed": {
+      "type": "boolean",
+      "default": true
+    },
+    "runtime_profile": {
+      "type": "string"
+    },
+    "runtime_name": {
       "type": "string"
     },
     "runtime_version": {
       "type": "string"
     },
-    "runtime_api_base_url": {
-      "type": "string",
-      "format": "uri"
+    "runtime_api_endpoint": {
+      "$ref": "../../common/endpoint_locator.schema.json"
     },
     "metadata": {
       "$ref": "../../common/metadata.schema.json"

@@ -1,18 +1,15 @@
 {
-  "title": "InstanceCreateRequest",
+  "title": "RuntimeProfileUpsertRequest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["runtime_profile"],
   "properties": {
-    "runtime_profile": {
+    "runtime_name": {
       "type": "string"
     },
-    "count": {
-      "type": "integer",
-      "minimum": 1,
-      "default": 1
+    "description": {
+      "type": "string"
     },
-    "overrides": {
+    "defaults": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

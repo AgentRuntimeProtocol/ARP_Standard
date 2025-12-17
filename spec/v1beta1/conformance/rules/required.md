@@ -18,6 +18,10 @@ Daemon MUST implement:
 - `GET /v1beta1/instances`
 - `POST /v1beta1/instances`
 - `DELETE /v1beta1/instances/{instance_id}`
+- `POST /v1beta1/instances:register`
+- `GET /v1beta1/admin/runtime-profiles`
+- `PUT /v1beta1/admin/runtime-profiles/{runtime_profile}`
+- `DELETE /v1beta1/admin/runtime-profiles/{runtime_profile}`
 - `GET /v1beta1/runs`
 - `POST /v1beta1/runs`
 - `GET /v1beta1/runs/{run_id}`

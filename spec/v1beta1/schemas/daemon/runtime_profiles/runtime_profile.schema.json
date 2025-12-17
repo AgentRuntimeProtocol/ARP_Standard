@@ -1,5 +1,5 @@
 {
-  "title": "InstanceCreateRequest",
+  "title": "RuntimeProfile",
   "type": "object",
   "additionalProperties": false,
   "required": ["runtime_profile"],
@@ -7,12 +7,13 @@
     "runtime_profile": {
       "type": "string"
     },
-    "count": {
-      "type": "integer",
-      "minimum": 1,
-      "default": 1
+    "runtime_name": {
+      "type": "string"
     },
-    "overrides": {
+    "description": {
+      "type": "string"
+    },
+    "defaults": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

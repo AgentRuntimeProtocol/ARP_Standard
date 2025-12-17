@@ -1,7 +1,8 @@
 {
   "runtime_profile": "default",
-  "count": 1,
-  "overrides": {
+  "runtime_name": "arp-jarvis-runtime",
+  "description": "Default managed runtime profile",
+  "defaults": {
     "env": {
       "LOG_LEVEL": "info"
     },

@@ -29,17 +29,17 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "profile": {
+        "runtime_profile": {
           "type": "string"
         },
         "instance_id": {
           "type": "string"
         },
-        "runtime_type": {
+        "runtime_name": {
           "type": "string"
         },
-        "address": {
-          "type": "string"
+        "runtime_api_endpoint": {
+          "$ref": "../../common/endpoint_locator.schema.json"
         }
       }
     },
@@ -87,4 +87,3 @@
     }
   }
 }
-

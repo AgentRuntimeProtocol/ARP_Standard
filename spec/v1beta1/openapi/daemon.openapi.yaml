@@ -6,6 +6,8 @@ paths:
   /v1beta1/health:
     get:
       summary: Health
+      operationId: health
+      tags: [health]
       responses:
         "200":
           description: Health response
@@ -22,6 +24,8 @@ paths:
   /v1beta1/version:
     get:
       summary: Version
+      operationId: version
+      tags: [version]
       responses:
         "200":
           description: Version response
@@ -38,6 +42,8 @@ paths:
   /v1beta1/instances:
     get:
       summary: List runtime instances
+      operationId: list_instances
+      tags: [instances]
       responses:
         "200":
           description: Runtime instance list
@@ -53,6 +59,8 @@ paths:
                 $ref: "#/components/schemas/ErrorEnvelope"
     post:
       summary: Create runtime instances
+      operationId: create_instances
+      tags: [instances]
       requestBody:
         required: true
         content:
@@ -74,9 +82,102 @@ paths:
                 $ref: "#/components/schemas/ErrorEnvelope"
   /v1beta1/instances/{instance_id}:
     delete:
-      summary: Delete runtime instance
+      summary: Delete runtime instance (managed) or deregister (external)
+      operationId: delete_instance
+      tags: [instances]
       parameters:
         - name: instance_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/instances:register:
+    post:
+      summary: Register external runtime instance endpoint (unmanaged)
+      operationId: register_instance
+      tags: [instances]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstanceRegisterRequest"
+      responses:
+        "200":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceRegisterResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/admin/runtime-profiles:
+    get:
+      summary: List runtime profiles (safe list)
+      operationId: list_runtime_profiles
+      tags: [runtime_profiles]
+      responses:
+        "200":
+          description: Runtime profile list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeProfileListResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1beta1/admin/runtime-profiles/{runtime_profile}:
+    put:
+      summary: Upsert runtime profile (safe list)
+      operationId: upsert_runtime_profile
+      tags: [runtime_profiles]
+      parameters:
+        - name: runtime_profile
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RuntimeProfileUpsertRequest"
+      responses:
+        "200":
+          description: Runtime profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RuntimeProfile"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    delete:
+      summary: Delete runtime profile (safe list)
+      operationId: delete_runtime_profile
+      tags: [runtime_profiles]
+      parameters:
+        - name: runtime_profile
           in: path
           required: true
           schema:
@@ -93,6 +194,8 @@ paths:
   /v1beta1/runs:
     get:
       summary: List runs
+      operationId: list_runs
+      tags: [runs]
       parameters:
         - name: page_size
           in: query
@@ -121,6 +224,8 @@ paths:
                 $ref: "#/components/schemas/ErrorEnvelope"
     post:
       summary: Submit run (async)
+      operationId: submit_run
+      tags: [runs]
       requestBody:
         required: true
         content:
@@ -143,6 +248,8 @@ paths:
   /v1beta1/runs/{run_id}:
     get:
       summary: Get run status
+      operationId: get_run_status
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -165,6 +272,8 @@ paths:
   /v1beta1/runs/{run_id}/result:
     get:
       summary: Get run result
+      operationId: get_run_result
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -187,6 +296,8 @@ paths:
   /v1beta1/runs/{run_id}/trace:
     get:
       summary: Get run trace (optional)
+      operationId: get_run_trace
+      tags: [runs]
       parameters:
         - name: run_id
           in: path
@@ -218,10 +329,20 @@ components:
       $ref: ../schemas/daemon/instances/runtime_instance.schema.json
     InstanceCreateRequest:
       $ref: ../schemas/daemon/instances/instance_create_request.schema.json
+    InstanceRegisterRequest:
+      $ref: ../schemas/daemon/instances/instance_register_request.schema.json
     InstanceCreateResponse:
       $ref: ../schemas/daemon/instances/instance_create_response.schema.json
+    InstanceRegisterResponse:
+      $ref: ../schemas/daemon/instances/instance_register_response.schema.json
     InstanceListResponse:
       $ref: ../schemas/daemon/instances/instance_list_response.schema.json
+    RuntimeProfile:
+      $ref: ../schemas/daemon/runtime_profiles/runtime_profile.schema.json
+    RuntimeProfileUpsertRequest:
+      $ref: ../schemas/daemon/runtime_profiles/runtime_profile_upsert_request.schema.json
+    RuntimeProfileListResponse:
+      $ref: ../schemas/daemon/runtime_profiles/runtime_profile_list_response.schema.json
     RunRequest:
       $ref: ../schemas/runtime/runs/run_request.schema.json
     RunStatus:
