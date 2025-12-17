@@ -352,6 +352,7 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
     endpoint_imports: dict[str, set[str]] = {}
     import_shared: set[str] = set()
     import_service: set[str] = {"Health", "VersionInfo"}
+    body_coerce_models: set[str] = set()
     uses_unset = False
 
     for op in operations:
@@ -364,6 +365,16 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
                 import_shared.add(model)
             elif model in service_model_names:
                 import_service.add(model)
+
+        body_type = op.get("body_type")
+        if (
+            isinstance(body_type, str)
+            and body_type
+            and body_type in shared_model_origin
+            and body_type in service_model_names
+            and shared_model_origin[body_type] != f"arp_sdk.{service}.models"
+        ):
+            body_coerce_models.add(body_type)
 
         params = op["params"]
         if any(isinstance(p, dict) and p.get("in") == "query" for p in params):
@@ -395,6 +406,11 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
     sdk.append("from .models import ErrorEnvelope as _ErrorEnvelope")
     if import_service:
         sdk.append(f"from .models import {', '.join(sorted(import_service))}")
+    if body_coerce_models:
+        sdk.append("from .models import (")
+        for name in sorted(body_coerce_models):
+            sdk.append(f"    {name} as _{name},")
+        sdk.append(")")
     sdk.append("from .types import Response as _Response")
     sdk.append("from .types import Unset as _Unset")
     if uses_unset:
@@ -615,6 +631,10 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
         elif return_type in shared_model_origin and shared_model_origin[return_type] != f"arp_sdk.{service}.models":
             coerce_target = return_type
 
+        body_coerce_target: str | None = None
+        if body_type and body_type in body_coerce_models:
+            body_coerce_target = body_type
+
         if not path_params and not query_params and body_schema is None:
             sdk.append("    @overload")
             sdk.append(f"    def {method_name}(self) -> {return_type}: ...")
@@ -638,11 +658,13 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
             sdk.append(f"    def {method_name}(self, body: {body_type}) -> {return_type}: ...")
             sdk.append("")
             sdk.append("    @overload")
-            sdk.append(f"    def {method_name}(self, request: {request_type}) -> {return_type}: ...")
+            sdk.append(f"    def {method_name}(self, body: {request_type}) -> {return_type}: ...")
             sdk.append("")
-            sdk.append(f"    def {method_name}(self, request: {request_type} | {body_type}) -> {return_type}:")
-            sdk.append(f"        body = request.body if isinstance(request, {request_type}) else request")
-            sdk.append(f"        resp = {endpoint}.sync_detailed(client=self._client, body=body)")
+            sdk.append(f"    def {method_name}(self, body: {request_type} | {body_type}) -> {return_type}:")
+            sdk.append(f"        payload = body.body if isinstance(body, {request_type}) else body")
+            if body_coerce_target:
+                sdk.append(f"        payload = _coerce_model(payload, _{body_coerce_target})")
+            sdk.append(f"        resp = {endpoint}.sync_detailed(client=self._client, body=payload)")
             if allow_none:
                 sdk.append("        _unwrap(resp, allow_none=True)")
                 sdk.append("        return None")
@@ -650,7 +672,8 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
                 sdk.append("        result = _unwrap(resp)")
                 if coerce_target:
                     sdk.append(f"        return _coerce_model(result, {coerce_target})")
-                sdk.append("        return result")
+                else:
+                    sdk.append("        return result")
             sdk.append("")
             continue
 
@@ -660,10 +683,13 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
             sdk.append(f"    def {method_name}(self, {param_name}: {param_type}) -> {return_type}: ...")
             sdk.append("")
             sdk.append("    @overload")
-            sdk.append(f"    def {method_name}(self, request: {request_type}) -> {return_type}: ...")
+            sdk.append(f"    def {method_name}(self, {param_name}: {request_type}) -> {return_type}: ...")
             sdk.append("")
-            sdk.append(f"    def {method_name}(self, request: {request_type} | {param_type}) -> {return_type}:")
-            sdk.append(f"        {param_name} = request.{param_name} if isinstance(request, {request_type}) else request")
+            sdk.append(f"    def {method_name}(self, {param_name}: {request_type} | {param_type}) -> {return_type}:")
+            sdk.append(
+                f"        value = {param_name}.{param_name} if isinstance({param_name}, {request_type}) else {param_name}"
+            )
+            sdk.append(f"        {param_name} = value")
             sdk.append(f"        resp = {endpoint}.sync_detailed(client=self._client, {param_name}={param_name})")
             if allow_none:
                 sdk.append("        _unwrap(resp, allow_none=True)")
@@ -672,7 +698,8 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
                 sdk.append("        result = _unwrap(resp)")
                 if coerce_target:
                     sdk.append(f"        return _coerce_model(result, {coerce_target})")
-                sdk.append("        return result")
+                else:
+                    sdk.append("        return result")
             sdk.append("")
             continue
 
@@ -688,10 +715,9 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
             sdk.append(f"    def {method_name}(self, *, {kw_sig}) -> {return_type}: ...")
             sdk.append("")
             sdk.append(f"    def {method_name}(self, request: {request_type} | None = None, *, {kw_sig}) -> {return_type}:")
+            sdk.append("        if request is not None:")
             for n, _ in query_params:
-                sdk.append("        if request is not None:")
                 sdk.append(f"            {n} = request.{n}")
-                break
             call_args = ", ".join(f"{n}=_UNSET if {n} is None else {n}" for n, _ in query_params)
             sdk.append(f"        resp = {endpoint}.sync_detailed(client=self._client, {call_args})")
             if allow_none:
@@ -713,7 +739,8 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
                 sdk.append("        result = _unwrap(resp)")
                 if coerce_target:
                     sdk.append(f"        return _coerce_model(result, {coerce_target})")
-                sdk.append("        return result")
+                else:
+                    sdk.append("        return result")
             sdk.append("")
             continue
 
@@ -734,7 +761,8 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
             sdk.append("        result = _unwrap(resp)")
             if coerce_target:
                 sdk.append(f"        return _coerce_model(result, {coerce_target})")
-            sdk.append("        return result")
+            else:
+                sdk.append("        return result")
         sdk.append("")
 
     sdk.append("__all__ = [")
