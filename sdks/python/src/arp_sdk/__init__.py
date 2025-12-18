@@ -10,7 +10,7 @@ __all__ = [
     "tool_registry", # pyright: ignore[reportUnsupportedDunderAll]
 ]
 
-__version__ = "1.0.0b2"
+__version__ = "0.1.0"
 
 from .errors import ArpApiError  # noqa: E402
 

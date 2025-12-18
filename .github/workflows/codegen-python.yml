@@ -21,7 +21,7 @@ jobs:
         run: .venv/bin/python -m pip install --upgrade pip && .venv/bin/python -m pip install -r tools/codegen/python/requirements-dev.txt
 
       - name: Generate Python SDK
-        run: .venv/bin/python tools/codegen/python/generate.py --version v1beta1
+        run: .venv/bin/python tools/codegen/python/generate.py --version v1
 
       - name: Install Python SDK (dev)
         run: .venv/bin/python -m pip install -e "sdks/python[dev]"

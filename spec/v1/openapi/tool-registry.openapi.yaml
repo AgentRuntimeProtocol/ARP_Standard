@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: ARP Tool Registry API
-  version: v1beta1
+  version: v1
 paths:
-  /v1beta1/health:
+  /v1/health:
     get:
       summary: Health
       operationId: health
@@ -21,7 +21,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/version:
+  /v1/version:
     get:
       summary: Version
       operationId: version
@@ -39,7 +39,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/tools:
+  /v1/tools:
     get:
       summary: List tools
       operationId: list_tools
@@ -59,7 +59,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/tools/{tool_id}:
+  /v1/tools/{tool_id}:
     get:
       summary: Get tool
       operationId: get_tool
@@ -83,7 +83,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/tool-invocations:
+  /v1/tool-invocations:
     post:
       summary: Invoke tool
       operationId: invoke_tool

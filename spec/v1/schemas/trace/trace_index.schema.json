@@ -1,6 +1,6 @@
 {
   "title": "TraceIndex",
-  "description": "Optional on-disk index format for traces (placeholder for v1beta1).",
+  "description": "Optional on-disk index format for traces (placeholder for v1).",
   "type": "object",
   "additionalProperties": false,
   "properties": {

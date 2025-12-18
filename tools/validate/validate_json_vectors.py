@@ -73,7 +73,7 @@ def validate_tree(payload_root: Path, schemas_root: Path, repo_root: Path, *, js
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--version", default="v1beta1", help="Spec version directory (default: v1beta1)")
+    parser.add_argument("--version", default="v1", help="Spec version directory (default: v1)")
     parser.add_argument("--include-examples", action="store_true", help="Also validate spec/<ver>/examples")
     args = parser.parse_args()
 

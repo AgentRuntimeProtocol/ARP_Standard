@@ -1,16 +1,9 @@
-# ARP Standard Python SDK
+# ARP Standard Python SDK (`arp-standard-py`)
 
-Python client and model layer aligned with `spec/v1beta1`.
-
-- PyPI distribution: `arp-standard-py`
-- Import package: `arp_sdk`
-
-## Install from source (editable)
+## Install
 
 ```bash
-python -m pip install -r tools/codegen/python/requirements.txt
-python tools/codegen/python/generate.py --version v1beta1
-python -m pip install -e sdks/python
+python3 -m pip install arp-standard-py
 ```
 
 ## Usage
@@ -26,20 +19,14 @@ created = client.create_instances(InstanceCreateRequest(runtime_profile="default
 runs = client.list_runs(ListRunsRequest(page_size=50))
 ```
 
-## Build artifact locally
+## See also
 
-```bash
-python -m pip install -r tools/codegen/python/requirements-dev.txt
-python tools/codegen/python/build_local.py --version v1beta1 --clean
-```
+### General Documentation
+- Spec (normative): [`spec/v1/`](../../spec/v1/README.md)
+- Docs index: [`docs/README.md`](../../docs/README.md)
+- Repository README: [`README.md`](../../README.md)
 
-## Release (PyPI)
+### Python Specific Documentation
+- Python SDK docs: [`docs/python-sdk.md`](../../docs/python-sdk.md)
+- Codegen (developers): [`tools/codegen/python/README.md`](../../tools/codegen/python/README.md)
 
-The GitHub Actions workflow `release` publishes this package when you push a tag matching:
-
-- `v<version>` (example: `v1.0.0b2`)
-
-The workflow verifies the tag matches `sdks/python/pyproject.toml` and `arp_sdk.__version__`, then builds and publishes using PyPI Trusted Publishing (OIDC).
-It also rejects tags that are not contained in `origin/main`.
-
-On tag pushes, the workflow also creates a GitHub Release and uploads the wheel/sdist as release assets.

@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: ARP Daemon API
-  version: v1beta1
+  version: v1
 paths:
-  /v1beta1/health:
+  /v1/health:
     get:
       summary: Health
       operationId: health
@@ -21,7 +21,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/version:
+  /v1/version:
     get:
       summary: Version
       operationId: version
@@ -39,7 +39,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/instances:
+  /v1/instances:
     get:
       summary: List runtime instances
       operationId: list_instances
@@ -80,7 +80,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/instances/{instance_id}:
+  /v1/instances/{instance_id}:
     delete:
       summary: Delete runtime instance (managed) or deregister (external)
       operationId: delete_instance
@@ -100,7 +100,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/instances:register:
+  /v1/instances:register:
     post:
       summary: Register external runtime instance endpoint (unmanaged)
       operationId: register_instance
@@ -124,7 +124,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/admin/runtime-profiles:
+  /v1/admin/runtime-profiles:
     get:
       summary: List runtime profiles (safe list)
       operationId: list_runtime_profiles
@@ -142,7 +142,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/admin/runtime-profiles/{runtime_profile}:
+  /v1/admin/runtime-profiles/{runtime_profile}:
     put:
       summary: Upsert runtime profile (safe list)
       operationId: upsert_runtime_profile
@@ -191,7 +191,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/runs:
+  /v1/runs:
     get:
       summary: List runs
       operationId: list_runs
@@ -245,7 +245,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/runs/{run_id}:
+  /v1/runs/{run_id}:
     get:
       summary: Get run status
       operationId: get_run_status
@@ -269,7 +269,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/runs/{run_id}/result:
+  /v1/runs/{run_id}/result:
     get:
       summary: Get run result
       operationId: get_run_result
@@ -293,7 +293,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/runs/{run_id}/trace:
+  /v1/runs/{run_id}/trace:
     get:
       summary: Get run trace (optional)
       operationId: get_run_trace

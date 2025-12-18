@@ -1,9 +1,9 @@
 openapi: 3.0.3
 info:
   title: ARP Memory API (placeholder)
-  version: v1beta1
+  version: v1
 paths:
-  /v1beta1/health:
+  /v1/health:
     get:
       summary: Health
       responses:
@@ -19,7 +19,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1beta1/version:
+  /v1/version:
     get:
       summary: Version
       responses:
