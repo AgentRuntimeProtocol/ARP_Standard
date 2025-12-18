@@ -285,7 +285,8 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
     for path, path_item in (bundled_openapi.get("paths") or {}).items():
         if not isinstance(path_item, dict):
             continue
-        inherited_params = path_item.get("parameters") if isinstance(path_item.get("parameters"), list) else []
+        raw_inherited_params = path_item.get("parameters")
+        inherited_params = raw_inherited_params if isinstance(raw_inherited_params, list) else []
         for http_method, op in path_item.items():
             if http_method.lower() not in _HTTP_METHODS:
                 continue
