@@ -77,7 +77,7 @@ jobs:
 
           if model_version != client_version or model_version != server_version:
               raise SystemExit(
-                  f\"Version mismatch: model={model_version} client={client_version} server={server_version}\"
+                  f"Version mismatch: model={model_version} client={client_version} server={server_version}"
               )
           if model_init_version != model_version:
               raise SystemExit(
@@ -89,7 +89,7 @@ jobs:
               )
           if server_init_version != server_version:
               raise SystemExit(
-                  f\"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}\"
+                  f"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}"
               )
 
           ref = os.environ.get("GITHUB_REF", "")
