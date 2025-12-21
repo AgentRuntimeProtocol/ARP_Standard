@@ -1,6 +1,7 @@
 # Validate
 
 Validate conformance vectors (and optionally examples) against the JSON Schemas.
+Also validate the OpenAPI specs for unsupported features and broken references.
 
 Run commands from the repository root.
 
@@ -20,4 +21,10 @@ python3 tools/validate/validate_json_vectors.py
 
 ```bash
 python3 tools/validate/validate_json_vectors.py --include-examples
+```
+
+## Validate OpenAPI specs
+
+```bash
+python3 tools/validate/validate_openapi.py --version v1
 ```

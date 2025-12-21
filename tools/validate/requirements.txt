@@ -1,2 +1,2 @@
 jsonschema>=4.21.0
-
+ruamel.yaml>=0.18.6

@@ -1,0 +1,2 @@
+openapi-python-client==0.28.0
+ruamel.yaml>=0.18.6

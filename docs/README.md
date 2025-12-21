@@ -1,6 +1,6 @@
 # ARP Standard Docs
 
-Short, practical docs for working with the ARP Standard and its Python SDK.
+Short, practical docs for working with the ARP Standard and its Python client, models, and server bases.
 
 ## Start here
 
@@ -8,7 +8,8 @@ Short, practical docs for working with the ARP Standard and its Python SDK.
 - Spec layout + conventions: [`docs/spec.md`](spec.md)
 - Service overview (what talks to what): [`docs/services.md`](services.md)
 - Conformance vectors + validation: [`docs/conformance.md`](conformance.md)
-- Python SDK (`arp-standard-py` / `arp_sdk`): [`docs/python-sdk.md`](python-sdk.md)
+- Python client + models (`arp-standard-client` / `arp-standard-model`): [`docs/python-client.md`](python-client.md)
+- Python server bases (`arp-standard-server`): [`docs/python-server.md`](python-server.md)
 
 ## Quick commands
 
@@ -21,9 +22,20 @@ python3 -m pip install -r tools/validate/requirements.txt
 python3 tools/validate/validate_json_vectors.py --include-examples
 ```
 
-Generate the Python SDK locally (requires codegen deps):
+Validate OpenAPI specs (requires `ruamel.yaml`):
 
 ```bash
-python3 -m pip install -r tools/codegen/python/requirements.txt
-python3 tools/codegen/python/generate.py
+python3 -m pip install -r tools/validate/requirements.txt
+python3 tools/validate/validate_openapi.py --version v1
+```
+
+Generate the Python client + models + server locally (requires codegen deps):
+
+```bash
+python3 -m pip install -r tools/codegen/python/model/requirements.txt
+python3 -m pip install -r tools/codegen/python/client/requirements.txt
+python3 -m pip install -r tools/codegen/python/server/requirements.txt
+python3 tools/codegen/python/model/generate.py
+python3 tools/codegen/python/client/generate.py
+python3 tools/codegen/python/server/generate.py
 ```

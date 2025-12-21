@@ -15,8 +15,8 @@ on:
         default: testpypi
 
 jobs:
-  build-python-sdk:
-    name: Build Python SDK
+  build-python-packages:
+    name: Build Python model/client/server packages
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.versions.outputs.version }}
@@ -50,21 +50,46 @@ jobs:
           import tomllib
           from pathlib import Path
 
-          pyproject_path = Path("sdks/python/pyproject.toml")
-          init_path = Path("sdks/python/src/arp_sdk/__init__.py")
+          model_pyproject = Path("models/python/pyproject.toml")
+          model_init = Path("models/python/src/arp_standard_model/__init__.py")
+          client_pyproject = Path("clients/python/pyproject.toml")
+          client_init = Path("clients/python/src/arp_standard_client/__init__.py")
+          server_pyproject = Path("kits/python/pyproject.toml")
+          server_init = Path("kits/python/src/arp_standard_server/__init__.py")
 
-          pyproject = tomllib.loads(pyproject_path.read_text(encoding="utf-8"))
-          pkg_version = pyproject["project"]["version"]
+          def _read_pyproject(path: Path) -> str:
+              pyproject = tomllib.loads(path.read_text(encoding="utf-8"))
+              return pyproject["project"]["version"]
 
-          init_text = init_path.read_text(encoding="utf-8")
-          match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', init_text)
-          if not match:
-              raise SystemExit(f"Unable to find __version__ in {init_path}")
-          init_version = match.group(1)
+          def _read_init(path: Path) -> str:
+              text = path.read_text(encoding="utf-8")
+              match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', text)
+              if not match:
+                  raise SystemExit(f"Unable to find __version__ in {path}")
+              return match.group(1)
 
-          if init_version != pkg_version:
+          model_version = _read_pyproject(model_pyproject)
+          client_version = _read_pyproject(client_pyproject)
+          server_version = _read_pyproject(server_pyproject)
+          model_init_version = _read_init(model_init)
+          client_init_version = _read_init(client_init)
+          server_init_version = _read_init(server_init)
+
+          if model_version != client_version or model_version != server_version:
               raise SystemExit(
-                  f"Version mismatch: pyproject.toml={pkg_version} vs arp_sdk.__version__={init_version}"
+                  f\"Version mismatch: model={model_version} client={client_version} server={server_version}\"
+              )
+          if model_init_version != model_version:
+              raise SystemExit(
+                  f"Version mismatch: {model_pyproject}={model_version} vs {model_init}={model_init_version}"
+              )
+          if client_init_version != client_version:
+              raise SystemExit(
+                  f"Version mismatch: {client_pyproject}={client_version} vs {client_init}={client_init_version}"
+              )
+          if server_init_version != server_version:
+              raise SystemExit(
+                  f\"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}\"
               )
 
           ref = os.environ.get("GITHUB_REF", "")
@@ -74,47 +99,97 @@ jobs:
               if not tag.startswith(prefix):
                   raise SystemExit(f"Expected tag to start with '{prefix}': {tag}")
               tag_version = tag.removeprefix(prefix)
-              if tag_version != pkg_version:
+              if tag_version != client_version:
                   raise SystemExit(
-                      f"Tag/version mismatch: tag={tag_version} vs pyproject.toml={pkg_version}"
+                      f"Tag/version mismatch: tag={tag_version} vs version={client_version}"
                   )
 
           output_path = os.environ.get("GITHUB_OUTPUT")
           if output_path:
               with open(output_path, "a", encoding="utf-8") as f:
-                  f.write(f"version={pkg_version}\n")
-          print(f"Python SDK version: {pkg_version}")
+                  f.write(f"version={client_version}\n")
+          print(f"Python package version: {client_version}")
           PY
 
       - name: Install build tooling
         run: .venv/bin/python -m pip install --upgrade pip && .venv/bin/python -m pip install build twine
 
       - name: Install codegen tooling
-        run: .venv/bin/python -m pip install -r tools/codegen/python/requirements.txt
+        run: |
+          .venv/bin/python -m pip install -r tools/codegen/python/model/requirements.txt
+          .venv/bin/python -m pip install -r tools/codegen/python/client/requirements.txt
+          .venv/bin/python -m pip install -r tools/codegen/python/server/requirements.txt
+          .venv/bin/python -m pip install -r tools/validate/requirements.txt
 
-      - name: Generate Python SDK
-        run: .venv/bin/python tools/codegen/python/generate.py --version v1
+      - name: Validate OpenAPI specs
+        run: .venv/bin/python tools/validate/validate_openapi.py --version v1
 
-      - name: Install Python SDK (dev)
-        run: .venv/bin/python -m pip install -e "sdks/python[dev]"
+      - name: Generate Python models
+        run: .venv/bin/python tools/codegen/python/model/generate.py --version v1
+
+      - name: Generate Python client
+        run: .venv/bin/python tools/codegen/python/client/generate.py --version v1
+
+      - name: Generate Python server
+        run: .venv/bin/python tools/codegen/python/server/generate.py --version v1
+
+      - name: Install Python models (dev)
+        run: .venv/bin/python -m pip install -e "models/python"
+
+      - name: Install Python client (dev)
+        run: .venv/bin/python -m pip install -e "clients/python[dev]"
+
+      - name: Install Python server (dev)
+        run: .venv/bin/python -m pip install -e "kits/python"
 
       - name: Pyright
-        run: .venv/bin/pyright -p sdks/python/pyrightconfig.json
+        run: .venv/bin/pyright -p clients/python/pyrightconfig.json
 
-      - name: Build sdist + wheel
-        run: .venv/bin/python -m build sdks/python --sdist --wheel --outdir sdks/python/dist
+      - name: Pyright (server)
+        run: .venv/bin/pyright -p kits/python/pyrightconfig.json
 
-      - name: Check dist metadata
-        run: .venv/bin/python -m twine check sdks/python/dist/*
+      - name: Unit tests
+        run: .venv/bin/python -m unittest discover -s tests
+
+      - name: Build model sdist + wheel
+        run: .venv/bin/python -m build models/python --sdist --wheel --outdir models/python/dist
+
+      - name: Build client sdist + wheel
+        run: .venv/bin/python -m build clients/python --sdist --wheel --outdir clients/python/dist
+
+      - name: Build server sdist + wheel
+        run: .venv/bin/python -m build kits/python --sdist --wheel --outdir kits/python/dist
+
+      - name: Check model dist metadata
+        run: .venv/bin/python -m twine check models/python/dist/*
+
+      - name: Check client dist metadata
+        run: .venv/bin/python -m twine check clients/python/dist/*
+
+      - name: Check server dist metadata
+        run: .venv/bin/python -m twine check kits/python/dist/*
+
+      - name: Verify dist dependencies
+        run: .venv/bin/python tools/codegen/python/verify_dist_dependencies.py
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python-sdk-dist
-          path: sdks/python/dist/*
+          name: python-model-dist
+          path: models/python/dist/*
 
-  publish-python-sdk:
-    name: Publish Python SDK
-    needs: build-python-sdk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-client-dist
+          path: clients/python/dist/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-server-dist
+          path: kits/python/dist/*
+
+  publish-python-packages:
+    name: Publish Python model/client/server packages
+    needs: build-python-packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -122,25 +197,61 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: python-sdk-dist
-          path: dist
+          name: python-model-dist
+          path: dist/model
 
-      - name: Publish to TestPyPI (trusted publishing)
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-client-dist
+          path: dist/client
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-server-dist
+          path: dist/server
+
+      - name: Publish model to TestPyPI (trusted publishing)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist
+          packages-dir: dist/model
           repository-url: https://test.pypi.org/legacy/
 
-      - name: Publish to PyPI (trusted publishing)
+      - name: Publish client to TestPyPI (trusted publishing)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/client
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish server to TestPyPI (trusted publishing)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/server
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Publish model to PyPI (trusted publishing)
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist
+          packages-dir: dist/model
+
+      - name: Publish client to PyPI (trusted publishing)
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/client
+
+      - name: Publish server to PyPI (trusted publishing)
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/server
 
   github-release:
-    name: GitHub Release
-    needs: [build-python-sdk, publish-python-sdk]
+    name: GitHub Release (Python packages)
+    needs: [build-python-packages, publish-python-packages]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -148,8 +259,18 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: python-sdk-dist
-          path: dist
+          name: python-model-dist
+          path: dist/model
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-client-dist
+          path: dist/client
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-server-dist
+          path: dist/server
 
       - name: Create GitHub Release (with artifacts)
         uses: softprops/action-gh-release@v2
@@ -157,6 +278,9 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           generate_release_notes: true
-          prerelease: ${{ contains(needs.build-python-sdk.outputs.version, 'a') || contains(needs.build-python-sdk.outputs.version, 'b') || contains(needs.build-python-sdk.outputs.version, 'rc') }}
-          files: dist/*
+          prerelease: ${{ contains(needs.build-python-packages.outputs.version, 'a') || contains(needs.build-python-packages.outputs.version, 'b') || contains(needs.build-python-packages.outputs.version, 'rc') }}
+          files: |
+            dist/model/*
+            dist/client/*
+            dist/server/*
           fail_on_unmatched_files: true

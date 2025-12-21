@@ -1,0 +1,7 @@
+{
+  "include": ["src/arp_standard_client"],
+  "extraPaths": ["src"],
+  "pythonVersion": "3.10",
+  "venvPath": "../..",
+  "venv": ".venv"
+}

@@ -12,9 +12,15 @@
 </div>
 
 <div align="center">
-  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-py" alt="PyPI - License"></a>
-  <a href="https://pypistats.org/packages/arp-standard-py" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-py" alt="PyPI - Downloads"></a>
-  <a href="https://pypi.org/project/arp-standard-py/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-py?label=%20" alt="Version"></a>
+
+  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-client" alt="PyPI - License"></a>
+
+  <a href="https://pypistats.org/packages/arp-standard-server" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-server" alt="PyPI - Downloads - Server"></a>
+  <a href="https://pypi.org/project/arp-standard-server/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-server?label=arp-standard-server" alt="Version - Server"></a>
+
+  <a href="https://pypistats.org/packages/arp-standard-client" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-client" alt="PyPI - Downloads - Client"></a>
+  <a href="https://pypi.org/project/arp-standard-client/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-client?label=arp-standard-client" alt="Version - Client"></a> 
+
   <a href="https://www.reddit.com/r/AgentRuntimeProtocol/" target="_blank"><img src="https://img.shields.io/badge/reddit-r%2FAgentRuntimeProtocol-ff6314?logo=reddit" alt="Reddit"></a>
    
 </div>
@@ -28,7 +34,7 @@
 _**Agent Runtime Protocol**_ is an open standard for running agentic workflows in a consistent way across runtimes, tools, model providers, environments, and even protocols. It is built to be open, modular, adaptive, and distributed. 
 
 ARP is:
-- **Language-agnostic**: the standard is defined as contracts, not as a single SDK.
+- **Language-agnostic**: the standard is defined as contracts, not as a single official client or server library.
 - **Cloud/model-agnostic**: designed to support multiple deployment environments and model providers. Components can live close or far from each other.
 - **Modular**: every component can be swapped out (runtimes, tool registries, orchestrators, control planes).
 - **Standard-first**: contracts are the product wedge; implementations exist to validate and accelerate adoption.
@@ -38,14 +44,16 @@ ARP is:
 
 - Current standard: [`spec/v1/`](spec/v1/README.md)
 - Docs: [`docs/`](docs/README.md)
-- Generated SDKs : [`sdks/python/`](sdks/python/README.md)
+- Generated Python client: [`clients/python/`](clients/python/README.md)
+- Generated Python models: [`models/python/`](models/python/README.md)
+- Generated Python server bases: [`kits/python/`](kits/python/README.md)
 - Tooling (codegen, validation): [`tools/`](tools/)
 
 ## Start here
 
 If you want the exact contracts:
 - Read the ARP Standard: [`spec/v1/`](spec/v1/README.md)
-- Play with the generated SDK to see the contracts in action.
+- Play with the generated Python client + models to see the contracts in action.
 - Optionally, the docs: [`docs/README.md`](docs/README.md)
 
 If you want something runnable:
@@ -88,48 +96,108 @@ Standard design goals:
 - Strong contracts: explicit schemas, consistent error envelopes, stable versioning.
 - Forward compatibility: flexible extension points for new feature needs.
 - Capability discovery: clients can detect supported feature sets to avoid lockstep upgrades.
-- Conformance testing in SDKs: generated SDKs are validated against the schemas to provide reliable artifacts that adhere to the standard.
+- Conformance testing in client/server packages: generated client and server packages are validated against the schemas to provide reliable artifacts that adhere to the standard.
 
-## SDKs
+## Clients and server bases
 
-SDKs are client-focused libraries for talking to ARP components (Runtime, Tool Registry, Daemon). Use them to easily communicate with any ARP-compliant component.
+Client packages are client-focused libraries for talking to ARP components (Runtime, Tool Registry, Daemon). Use them to easily communicate with any ARP-compliant component.
+Some languages also ship a companion models package and a server base package (builder kit) to implement components with the same contracts.
 
-They’re also useful for integration/conformance testing: write tests that call your service via the SDK and validate behavior against the contracts.
+They’re also useful for integration/conformance testing: write tests that call your service via the client and validate behavior against the contracts.
 
 ### Language support
 
-Currently, a Python SDK package is published:
-- Python: [`arp-standard-py`](sdks/python/README.md) (imported as `arp_sdk`)
+Currently, Python packages are published:
+- Python client: [`arp-standard-client`](clients/python/README.md) (imported as `arp_standard_client`)
+- Python models: [`arp-standard-model`](models/python/README.md) (imported as `arp_standard_model`)
+- Python server bases: [`arp-standard-server`](kits/python/README.md) (imported as `arp_standard_server`)
 
-Other SDKs (JavaScript, Go, etc.) are planned/in progress.
+Other client libraries (JavaScript, Go, etc.) are planned/in progress.
 
 ### Install (Python)
 
 ```bash
-python3 -m pip install arp-standard-py
+python3 -m pip install arp-standard-client
+```
+
+Models only:
+
+```bash
+python3 -m pip install arp-standard-model
+```
+
+Server bases:
+
+```bash
+python3 -m pip install arp-standard-server
 ```
 
 ### Quick example
 
 ```python
-from arp_sdk.daemon import DaemonClient
-from arp_sdk.models import InstanceCreateRequest
+from arp_standard_client.daemon import DaemonClient
+from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
 
 client = DaemonClient(base_url="http://127.0.0.1:8082")
-created = client.create_instances(InstanceCreateRequest(runtime_profile="default", count=1))
-print(created.to_dict())
+created = client.create_instances(
+    DaemonCreateInstancesRequest(
+        body=InstanceCreateRequestBody(runtime_profile="default", count=1)
+    )
+)
+print(created.model_dump(exclude_none=True))
+```
+
+### Server example (FastAPI)
+
+```python
+from arp_standard_server.daemon import BaseDaemonServer
+from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
+
+class MyDaemon(BaseDaemonServer):
+    async def create_instances(self, request: DaemonCreateInstancesRequest):
+        body = request.body
+        return ...
+
+app = MyDaemon().create_app()
+```
+
+### Authentication (API key)
+
+```python
+client = DaemonClient(
+    base_url="http://127.0.0.1:8082",
+    headers={"X-API-Key": "your-api-key"},
+)
+```
+
+### Streaming (NDJSON)
+
+Streaming endpoints currently return NDJSON as plain text. Helpers are planned but not implemented yet.
+
+```python
+from arp_standard_client.runtime import RuntimeClient
+from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
+
+runtime = RuntimeClient(base_url="http://127.0.0.1:8081")
+text = runtime.get_run_events(
+    RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
+)
+for line in text.splitlines():
+    if not line:
+        continue
+    # json.loads(line)
 ```
 
 ### Code generation
 
-The spec in [`spec/v1/`](spec/v1/README.md) is the source of truth for the ARP Standard. Code generation pipelines read the contracts (OpenAPI + JSON Schemas) and generate language-specific SDKs automatically at release time.
+The spec in [`spec/v1/`](spec/v1/README.md) is the source of truth for the ARP Standard. Code generation pipelines read the contracts (OpenAPI + JSON Schemas) and generate language-specific client packages (and models where applicable) automatically at release time.
 
 The generated artifacts are validated against the spec schemas and published to their corresponding package providers (for example, `PyPI` for Python).
 
 > [!NOTE]
 > Never manually edit generated files. They will be overwritten by new generations.
 
-For SDK developers, see [`tools/codegen/python/README.md`](tools/codegen/python/README.md).
+For client/server codegen developers, see [`tools/codegen/python/README.md`](tools/codegen/python/README.md).
 
 ## Versioning
 
@@ -144,14 +212,15 @@ All endpoints in the v1 spec are versioned under the `/v1` path prefix (e.g. `GE
 - Spec overview: [`docs/spec.md`](docs/spec.md)
 - Services overview: [`docs/services.md`](docs/services.md)
 - Conformance: [`docs/conformance.md`](docs/conformance.md)
-- Python SDK: [`docs/python-sdk.md`](docs/python-sdk.md)
+- Python client + models: [`docs/python-client.md`](docs/python-client.md)
+- Python server bases: [`docs/python-server.md`](docs/python-server.md)
 
 ## Contributing
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 Ways to contribute:
-- Add conformance tests and golden vectors to expand SDK validation coverage.
+- Add conformance tests and golden vectors to expand client validation coverage.
 - Build interoperability bridges (MCP, A2A, Agent Protocol) and feed back schema needs.
 - Propose standard changes backed by concrete implementation evidence.
 - Any other things that the core devs didn't think of. We know there's a lot.

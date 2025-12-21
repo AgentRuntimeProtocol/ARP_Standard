@@ -12,7 +12,14 @@ build/
 .coverage
 coverage.xml
 
-# Generated SDK source (local-only; produced by tools/codegen)
-sdks/python/src/arp_sdk/*/
-!sdks/python/src/arp_sdk/clients/
-!sdks/python/src/arp_sdk/models/
+# Generated client source (local-only; produced by tools/codegen)
+clients/python/src/arp_standard_client/*/
+!clients/python/src/arp_standard_client/clients/
+!clients/python/src/arp_standard_client/models/
+
+# Generated models (local-only; produced by tools/codegen)
+models/python/src/arp_standard_model/_generated.py
+models/python/src/arp_standard_model/_requests.py
+
+# Generated server base source (local-only; produced by tools/codegen)
+kits/python/src/arp_standard_server/*/
