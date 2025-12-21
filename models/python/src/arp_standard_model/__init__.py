@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-__version__ = "0.2.0"
-SPEC_REF = "spec/v1@v0.2.0"
+__version__ = "0.2.1"
+SPEC_REF = "spec/v1@v0.2.1"
 
 try:
     from ._generated import *  # noqa: F403

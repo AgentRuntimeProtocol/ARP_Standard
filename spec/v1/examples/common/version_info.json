@@ -1,6 +1,6 @@
 {
   "service_name": "arp-jarvis-tool-registry",
-  "service_version": "0.2.0",
+  "service_version": "0.2.1",
   "supported_api_versions": ["v1"],
   "build": {
     "commit": "abc123",

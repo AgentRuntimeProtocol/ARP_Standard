@@ -90,6 +90,15 @@ def _render(lines: list[str]) -> str:
 
 
 _HTTP_METHODS = {"get", "put", "post", "delete", "patch", "head", "options", "trace"}
+_FIELD_DEFAULT_RE = re.compile(r"Field\((\s*)None(\s*[,)])")
+
+
+def _rewrite_optional_field_defaults(path: Path) -> None:
+    """Ensure optional Field(None, ...) uses explicit default for type checkers."""
+    text = path.read_text(encoding="utf-8")
+    updated = _FIELD_DEFAULT_RE.sub(r"Field(\1default=None\2", text)
+    if updated != text:
+        path.write_text(updated, encoding="utf-8")
 
 
 def main() -> int:
@@ -158,6 +167,8 @@ def main() -> int:
             "bool",
         ]
         subprocess.run(cmd, check=True)
+
+    _rewrite_optional_field_defaults(output_path)
 
     request_models: list[tuple[str, str | None, str | None, bool]] = []
     params_models: list[tuple[str, list[tuple[str, str, bool]]]] = []
