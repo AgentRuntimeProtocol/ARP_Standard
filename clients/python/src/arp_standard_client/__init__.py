@@ -9,11 +9,10 @@ __all__ = [
     "models",  # pyright: ignore[reportUnsupportedDunderAll]
     "runtime",  # pyright: ignore[reportUnsupportedDunderAll]
     "tool_registry",  # pyright: ignore[reportUnsupportedDunderAll]
+    "ArpApiError",
 ]
 
 __version__ = "0.2.1"
 SPEC_REF = "spec/v1@v0.2.1"
 
 from .errors import ArpApiError  # noqa: E402
-
-__all__.append("ArpApiError")
