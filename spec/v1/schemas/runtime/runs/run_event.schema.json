@@ -12,8 +12,7 @@
       "minimum": 0
     },
     "type": {
-      "type": "string",
-      "enum": ["token", "step", "tool_call", "tool_result", "final", "error"]
+      "$ref": "run_event_type.schema.json"
     },
     "time": {
       "type": "string",
@@ -28,4 +27,3 @@
     }
   }
 }
-

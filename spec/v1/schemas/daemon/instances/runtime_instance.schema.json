@@ -8,8 +8,7 @@
       "type": "string"
     },
     "state": {
-      "type": "string",
-      "enum": ["starting", "ready", "busy", "stopping", "stopped", "error"]
+      "$ref": "instance_state.schema.json"
     },
     "managed": {
       "type": "boolean",

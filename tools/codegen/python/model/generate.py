@@ -91,6 +91,9 @@ def _render(lines: list[str]) -> str:
 
 _HTTP_METHODS = {"get", "put", "post", "delete", "patch", "head", "options", "trace"}
 _FIELD_DEFAULT_RE = re.compile(r"Field\((\s*)None(\s*[,)])")
+_NUMBERED_CLASS_RE = re.compile(r"^class\s+([A-Za-z_][A-Za-z0-9_]*\d+)\b", re.MULTILINE)
+_ALLOWED_NUMBERED_CLASSES = {"ToolInvocationRequest1", "ToolInvocationRequest2"}
+_ENUM_CLASS_RE = re.compile(r"^class\s+([A-Za-z_][A-Za-z0-9_]*)\(Enum\):", re.MULTILINE)
 
 
 def _rewrite_optional_field_defaults(path: Path) -> None:
@@ -99,6 +102,28 @@ def _rewrite_optional_field_defaults(path: Path) -> None:
     updated = _FIELD_DEFAULT_RE.sub(r"Field(\1default=None\2", text)
     if updated != text:
         path.write_text(updated, encoding="utf-8")
+
+
+def _guard_numbered_model_names(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    names = sorted({match.group(1) for match in _NUMBERED_CLASS_RE.finditer(text)})
+    unexpected = [name for name in names if name not in _ALLOWED_NUMBERED_CLASSES]
+    if unexpected:
+        raise SystemExit(
+            "Generated models include unexpected numbered classes: "
+            + ", ".join(unexpected)
+        )
+
+
+def _guard_enum_classes(path: Path, *, component_names: set[str]) -> None:
+    text = path.read_text(encoding="utf-8")
+    enum_names = sorted({match.group(1) for match in _ENUM_CLASS_RE.finditer(text)})
+    unexpected = [name for name in enum_names if name not in component_names]
+    if unexpected:
+        raise SystemExit(
+            "Generated enum classes are not declared in components: "
+            + ", ".join(unexpected)
+        )
 
 
 def main() -> int:
@@ -128,6 +153,8 @@ def main() -> int:
         if not isinstance(schemas, dict):
             raise SystemExit(f"Invalid schemas section in {path}")
         _merge_schemas(merged_schemas, schemas, label=name, collisions=collisions)
+
+    component_names = set(merged_schemas.keys())
 
     combined = {
         "openapi": "3.0.3",
@@ -169,6 +196,8 @@ def main() -> int:
         subprocess.run(cmd, check=True)
 
     _rewrite_optional_field_defaults(output_path)
+    _guard_numbered_model_names(output_path)
+    _guard_enum_classes(output_path, component_names=component_names)
 
     request_models: list[tuple[str, str | None, str | None, bool]] = []
     params_models: list[tuple[str, list[tuple[str, str, bool]]]] = []

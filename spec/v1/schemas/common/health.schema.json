@@ -5,8 +5,7 @@
   "required": ["status", "time"],
   "properties": {
     "status": {
-      "type": "string",
-      "enum": ["ok", "degraded", "down"]
+      "$ref": "status.schema.json"
     },
     "time": {
       "type": "string",
@@ -23,8 +22,7 @@
             "type": "string"
           },
           "status": {
-            "type": "string",
-            "enum": ["ok", "degraded", "down"]
+            "$ref": "status.schema.json"
           },
           "message": {
             "type": "string"
@@ -41,4 +39,3 @@
     }
   }
 }
-

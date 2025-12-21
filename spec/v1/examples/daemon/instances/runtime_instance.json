@@ -4,6 +4,6 @@
   "managed": true,
   "runtime_profile": "default",
   "runtime_name": "arp-jarvis-runtime",
-  "runtime_version": "0.2.1",
+  "runtime_version": "0.2.2",
   "runtime_api_endpoint": "http://127.0.0.1:7777"
 }

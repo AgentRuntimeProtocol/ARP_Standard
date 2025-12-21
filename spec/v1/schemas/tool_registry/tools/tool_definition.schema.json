@@ -22,8 +22,7 @@
       "additionalProperties": true
     },
     "source": {
-      "type": "string",
-      "enum": ["registry_local", "remote"]
+      "$ref": "tool_source.schema.json"
     },
     "metadata": {
       "$ref": "../../common/metadata.schema.json"
@@ -33,4 +32,3 @@
     }
   }
 }
-

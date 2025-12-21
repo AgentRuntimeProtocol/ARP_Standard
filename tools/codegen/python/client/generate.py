@@ -122,10 +122,131 @@ def _rewrite_content_types_for_codegen(value: Any) -> Any:
     return {k: _rewrite_content_types_for_codegen(v) for k, v in value.items()}
 
 
+_SCHEMA_KEYS = {
+    "$ref",
+    "additionalProperties",
+    "allOf",
+    "anyOf",
+    "const",
+    "default",
+    "enum",
+    "exclusiveMaximum",
+    "exclusiveMinimum",
+    "format",
+    "items",
+    "maximum",
+    "maxItems",
+    "maxLength",
+    "minimum",
+    "minItems",
+    "minLength",
+    "nullable",
+    "oneOf",
+    "pattern",
+    "properties",
+    "required",
+    "type",
+}
+
+
+def _is_schema_object(value: dict[str, Any]) -> bool:
+    if "$ref" in value:
+        return True
+    return any(key in value for key in _SCHEMA_KEYS)
+
+
+def _collect_titled_schemas(value: Any, *, collected: dict[str, dict[str, Any]]) -> None:
+    if isinstance(value, list):
+        for item in value:
+            _collect_titled_schemas(item, collected=collected)
+        return
+
+    if not isinstance(value, dict):
+        return
+
+    title = value.get("title")
+    if isinstance(title, str) and _is_schema_object(value):
+        existing = collected.get(title)
+        if existing is None:
+            collected[title] = value
+        elif existing != value:
+            raise ValueError(f"Schema title collision for {title}")
+
+    for item in value.values():
+        _collect_titled_schemas(item, collected=collected)
+
+
+def _replace_inline_schemas(
+    value: Any,
+    *,
+    schemas: dict[str, Any],
+    title_to_key: dict[str, str],
+) -> None:
+    if isinstance(value, list):
+        for idx, item in enumerate(value):
+            if isinstance(item, dict):
+                title = item.get("title")
+                if isinstance(title, str) and title in title_to_key and _is_schema_object(item):
+                    value[idx] = {"$ref": f"#/components/schemas/{title_to_key[title]}"}
+                    continue
+            _replace_inline_schemas(item, schemas=schemas, title_to_key=title_to_key)
+        return
+
+    if not isinstance(value, dict):
+        return
+
+    for key, item in list(value.items()):
+        if value is schemas:
+            if isinstance(item, dict):
+                _replace_inline_schemas(item, schemas=schemas, title_to_key=title_to_key)
+            continue
+        if isinstance(item, dict):
+            title = item.get("title")
+            if isinstance(title, str) and title in title_to_key and _is_schema_object(item):
+                value[key] = {"$ref": f"#/components/schemas/{title_to_key[title]}"}
+                continue
+            _replace_inline_schemas(item, schemas=schemas, title_to_key=title_to_key)
+        elif isinstance(item, list):
+            _replace_inline_schemas(item, schemas=schemas, title_to_key=title_to_key)
+
+
+def _canonicalize_inline_schemas(openapi: dict[str, Any]) -> dict[str, Any]:
+    components = openapi.setdefault("components", {})
+    schemas = components.setdefault("schemas", {})
+
+    titled: dict[str, dict[str, Any]] = {}
+    _collect_titled_schemas(openapi, collected=titled)
+
+    title_to_key: dict[str, str] = {}
+    for key, schema in schemas.items():
+        if not isinstance(schema, dict):
+            continue
+        title = schema.get("title")
+        if not isinstance(title, str):
+            continue
+        existing = title_to_key.get(title)
+        if existing and existing != key:
+            raise ValueError(f"Schema title collision for {title}: {existing} vs {key}")
+        title_to_key[title] = key
+
+    for title, schema in titled.items():
+        key = title_to_key.get(title)
+        if key:
+            if schemas[key] != schema:
+                raise ValueError(f"Schema title mismatch for {title}")
+            continue
+        schemas[title] = schema
+        title_to_key[title] = title
+
+    _replace_inline_schemas(openapi, schemas=schemas, title_to_key=title_to_key)
+    return openapi
+
+
 def bundle_openapi(source_path: Path) -> dict[str, Any]:
     openapi = _load_yaml(source_path)
     openapi = _resolve_external_refs(openapi, source_path.parent, cache={})
     openapi = _sanitize_for_openapi_3_0(openapi)
+    openapi = _canonicalize_inline_schemas(openapi)
     openapi = _rewrite_content_types_for_codegen(openapi)
     return openapi
 

@@ -1,5 +1,10 @@
 # Changelog — `v1`
 
+## 0.2.2
+
+- Canonicalize titled schemas during codegen bundling to avoid duplicate model names; no contract changes.
+- Promote inline enums (run/instance state, health status, run event type, tool source, trace level) to named schemas to avoid numbered enum classes.
+
 ## 0.2.1
 
 - Python model codegen now emits explicit `default=None` for optional fields to satisfy type checkers; no contract changes.

@@ -94,7 +94,7 @@ Models ignore unknown fields by default (Pydantic v2 behavior), so newer servers
 
 ## Spec reference
 
-Each package exports `SPEC_REF` (for example, `spec/v1@v0.2.1`) to indicate the spec tag used to generate the package.
+Each package exports `SPEC_REF` (for example, `spec/v1@v0.2.2`) to indicate the spec tag used to generate the package.
 
 ## Generate locally (developers)
 
@@ -117,8 +117,8 @@ python3 tools/codegen/python/client/generate.py
 2. Tag the release:
 
 ```bash
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ```
 
 ## See also

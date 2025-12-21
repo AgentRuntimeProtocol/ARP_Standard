@@ -8,8 +8,7 @@
       "type": "string"
     },
     "state": {
-      "type": "string",
-      "enum": ["queued", "running", "succeeded", "failed", "canceled"]
+      "$ref": "run_state.schema.json"
     },
     "started_at": {
       "type": "string",
@@ -27,4 +26,3 @@
     }
   }
 }
-

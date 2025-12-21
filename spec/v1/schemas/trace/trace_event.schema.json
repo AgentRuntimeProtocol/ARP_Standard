@@ -16,8 +16,7 @@
       "format": "date-time"
     },
     "level": {
-      "type": "string",
-      "enum": ["debug", "info", "warn", "error"]
+      "$ref": "trace_level.schema.json"
     },
     "type": {
       "type": "string"
@@ -31,4 +30,3 @@
     }
   }
 }
-
