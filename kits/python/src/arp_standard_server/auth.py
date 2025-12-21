@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Awaitable, Callable
 
 from fastapi import Depends
 from fastapi.security.api_key import APIKeyHeader
@@ -8,7 +8,9 @@ from fastapi.security.api_key import APIKeyHeader
 from .errors import ArpServerError
 
 
-def api_key_dependency(api_key: str, *, header_name: str = "X-API-Key") -> Callable[..., None]:
+def api_key_dependency(
+    api_key: str, *, header_name: str = "X-API-Key"
+) -> Callable[..., Awaitable[None]]:
     header = APIKeyHeader(name=header_name, auto_error=False)
 
     async def _require_key(key: str | None = Depends(header)) -> None:

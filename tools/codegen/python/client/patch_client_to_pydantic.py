@@ -24,6 +24,8 @@ def _patch_tree(service_root: Path) -> None:
     for path in service_root.rglob("*.py"):
         if path.name == "__init__.py":
             continue
+        if "models" in path.parts:
+            continue
         original = path.read_text(encoding="utf-8")
         updated = _patch_text(original)
         if updated != original:

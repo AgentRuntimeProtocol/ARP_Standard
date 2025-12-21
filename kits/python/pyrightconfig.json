@@ -1,6 +1,6 @@
 {
   "include": ["src/arp_standard_server"],
-  "extraPaths": ["src"],
+  "extraPaths": ["src", "../../models/python/src"],
   "pythonVersion": "3.10",
   "venvPath": "../..",
   "venv": ".venv"

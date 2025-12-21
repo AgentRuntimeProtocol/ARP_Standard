@@ -606,6 +606,13 @@ def generate_service(*, service: str, openapi_path: Path, output_dir: Path, conf
         generate_facade(service=service, bundled_openapi=bundled, output_dir=output_dir)
 
 
+def _remove_service_models(client_src_root: Path, services: Sequence[str]) -> None:
+    for service in services:
+        models_dir = client_src_root / service / "models"
+        if models_dir.exists():
+            shutil.rmtree(models_dir)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", default="v1", help="Spec version directory (default: v1)")
@@ -641,6 +648,7 @@ def main() -> int:
 
     patcher = Path(__file__).resolve().parent / "patch_client_to_pydantic.py"
     subprocess.run([sys.executable, str(patcher), "--root", str(client_src_root)], check=True)
+    _remove_service_models(client_src_root, list(services.keys()))
 
     return 0
 

@@ -16,7 +16,7 @@ def _read_version(pyproject_path: Path) -> str:
 
 def _read_spec_ref(init_path: Path) -> str:
     text = init_path.read_text(encoding="utf-8")
-    match = re.search(r"^SPEC_REF\\s*=\\s*[\"']([^\"']+)[\"']\\s*$", text, re.MULTILINE)
+    match = re.search(r"^SPEC_REF\s*=\s*[\"']([^\"']+)[\"']\s*$", text, re.MULTILINE)
     if not match:
         raise RuntimeError(f"Missing SPEC_REF in {init_path}")
     return match.group(1)

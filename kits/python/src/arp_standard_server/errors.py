@@ -30,11 +30,13 @@ class ArpServerError(Exception):
     def to_envelope(self) -> ErrorEnvelope:
         error = ErrorDetail(
             code=self.code,
+            cause=None,
             message=self.message,
             details=self.details,
+            extensions=None,
             retryable=self.retryable,
         )
-        return ErrorEnvelope(error=error)
+        return ErrorEnvelope(error=error, extensions=None)
 
 
 def _envelope_response(envelope: ErrorEnvelope, status_code: int) -> JSONResponse:

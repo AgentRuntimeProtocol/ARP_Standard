@@ -124,6 +124,9 @@ jobs:
       - name: Validate OpenAPI specs
         run: .venv/bin/python tools/validate/validate_openapi.py --version v1
 
+      - name: Validate generated artifacts are not checked in
+        run: .venv/bin/python tools/validate/validate_generated_artifacts.py
+
       - name: Generate Python models
         run: .venv/bin/python tools/codegen/python/model/generate.py --version v1
 
@@ -132,6 +135,20 @@ jobs:
 
       - name: Generate Python server
         run: .venv/bin/python tools/codegen/python/server/generate.py --version v1
+
+      - name: Create codegen source artifact
+        run: |
+          mkdir -p artifacts
+          tar -czf artifacts/python-codegen-src.tgz \
+            clients/python/src/arp_standard_client \
+            models/python/src/arp_standard_model/_generated.py \
+            models/python/src/arp_standard_model/_requests.py \
+            kits/python/src/arp_standard_server
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-codegen-src
+          path: artifacts/python-codegen-src.tgz
 
       - name: Install Python models (dev)
         run: .venv/bin/python -m pip install -e "models/python"

@@ -28,3 +28,9 @@ python3 tools/validate/validate_json_vectors.py --include-examples
 ```bash
 python3 tools/validate/validate_openapi.py --version v1
 ```
+
+## Validate generated artifacts are not checked in
+
+```bash
+python3 tools/validate/validate_generated_artifacts.py
+```
