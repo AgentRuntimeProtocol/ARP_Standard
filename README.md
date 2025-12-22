@@ -13,13 +13,13 @@
 
 <div align="center">
 
-  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-client" alt="PyPI - License"></a>
-
-  <a href="https://pypistats.org/packages/arp-standard-server" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-server" alt="PyPI - Downloads - Server"></a>
   <a href="https://pypi.org/project/arp-standard-server/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-server?label=arp-standard-server" alt="Version - Server"></a>
+  <a href="https://pypistats.org/packages/arp-standard-server" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-server" alt="PyPI - Downloads - Server"></a>
+  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-server" alt="PyPI - License"></a>
 
-  <a href="https://pypistats.org/packages/arp-standard-client" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-client" alt="PyPI - Downloads - Client"></a>
   <a href="https://pypi.org/project/arp-standard-client/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-client?label=arp-standard-client" alt="Version - Client"></a> 
+  <a href="https://pypistats.org/packages/arp-standard-client" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-client" alt="PyPI - Downloads - Client"></a>
+  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-client" alt="PyPI - License"></a>
 
   <a href="https://www.reddit.com/r/AgentRuntimeProtocol/" target="_blank"><img src="https://img.shields.io/badge/reddit-r%2FAgentRuntimeProtocol-ff6314?logo=reddit" alt="Reddit"></a>
    
