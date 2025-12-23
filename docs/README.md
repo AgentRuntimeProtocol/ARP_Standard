@@ -8,6 +8,7 @@ Short, practical docs for working with the ARP Standard and its Python client, m
 - Spec layout + conventions: [`docs/spec.md`](spec.md)
 - Service overview (what talks to what): [`docs/services.md`](services.md)
 - Conformance vectors + validation: [`docs/conformance.md`](conformance.md)
+- Endpoint conformance checker (`arp-conformance`): [`conformance/python/`](../conformance/python/README.md)
 - Python client + models (`arp-standard-client` / `arp-standard-model`): [`docs/python-client.md`](python-client.md)
 - Python server bases (`arp-standard-server`): [`docs/python-server.md`](python-server.md)
 

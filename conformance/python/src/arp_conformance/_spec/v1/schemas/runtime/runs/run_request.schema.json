@@ -1,0 +1,89 @@
+{
+  "title": "RunRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["input"],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal"],
+      "properties": {
+        "goal": {
+          "type": "string"
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "runtime_selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "runtime_profile": {
+          "type": "string"
+        },
+        "instance_id": {
+          "type": "string"
+        },
+        "runtime_name": {
+          "type": "string"
+        },
+        "runtime_api_endpoint": {
+          "$ref": "../../common/endpoint_locator.schema.json"
+        }
+      }
+    },
+    "tool_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allow_tool_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deny_tool_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "metadata": {
+      "$ref": "../../common/metadata.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

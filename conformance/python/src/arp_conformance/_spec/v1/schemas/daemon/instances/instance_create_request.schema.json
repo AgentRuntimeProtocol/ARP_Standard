@@ -1,0 +1,43 @@
+{
+  "title": "InstanceCreateRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runtime_profile"],
+  "properties": {
+    "runtime_profile": {
+      "type": "string"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "overrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "env": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tool_registry_url": {
+          "$ref": "../../common/endpoint_locator.schema.json"
+        }
+      }
+    },
+    "metadata": {
+      "$ref": "../../common/metadata.schema.json"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

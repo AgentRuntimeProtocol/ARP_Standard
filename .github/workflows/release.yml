@@ -16,7 +16,7 @@ on:
 
 jobs:
   build-python-packages:
-    name: Build Python model/client/server packages
+    name: Build Python model/client/server/conformance packages
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.versions.outputs.version }}
@@ -56,6 +56,8 @@ jobs:
           client_init = Path("clients/python/src/arp_standard_client/__init__.py")
           server_pyproject = Path("kits/python/pyproject.toml")
           server_init = Path("kits/python/src/arp_standard_server/__init__.py")
+          conformance_pyproject = Path("conformance/python/pyproject.toml")
+          conformance_init = Path("conformance/python/src/arp_conformance/__init__.py")
 
           def _read_pyproject(path: Path) -> str:
               pyproject = tomllib.loads(path.read_text(encoding="utf-8"))
@@ -71,13 +73,16 @@ jobs:
           model_version = _read_pyproject(model_pyproject)
           client_version = _read_pyproject(client_pyproject)
           server_version = _read_pyproject(server_pyproject)
+          conformance_version = _read_pyproject(conformance_pyproject)
           model_init_version = _read_init(model_init)
           client_init_version = _read_init(client_init)
           server_init_version = _read_init(server_init)
+          conformance_init_version = _read_init(conformance_init)
 
-          if model_version != client_version or model_version != server_version:
+          if model_version != client_version or model_version != server_version or model_version != conformance_version:
               raise SystemExit(
-                  f"Version mismatch: model={model_version} client={client_version} server={server_version}"
+                  "Version mismatch: "
+                  f"model={model_version} client={client_version} server={server_version} conformance={conformance_version}"
               )
           if model_init_version != model_version:
               raise SystemExit(
@@ -90,6 +95,10 @@ jobs:
           if server_init_version != server_version:
               raise SystemExit(
                   f"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}"
+              )
+          if conformance_init_version != conformance_version:
+              raise SystemExit(
+                  f"Version mismatch: {conformance_pyproject}={conformance_version} vs {conformance_init}={conformance_init_version}"
               )
 
           ref = os.environ.get("GITHUB_REF", "")
@@ -136,6 +145,9 @@ jobs:
       - name: Generate Python server
         run: .venv/bin/python tools/codegen/python/server/generate.py --version v1
 
+      - name: Sync embedded conformance spec snapshot
+        run: .venv/bin/python tools/conformance/sync_spec.py --version v1
+
       - name: Create codegen source artifact
         run: |
           mkdir -p artifacts
@@ -159,6 +171,9 @@ jobs:
       - name: Install Python server (dev)
         run: .venv/bin/python -m pip install -e "kits/python"
 
+      - name: Install Python conformance (dev)
+        run: .venv/bin/python -m pip install -e "conformance/python"
+
       - name: Pyright
         run: .venv/bin/pyright -p clients/python/pyrightconfig.json
 
@@ -177,6 +192,9 @@ jobs:
       - name: Build server sdist + wheel
         run: .venv/bin/python -m build kits/python --sdist --wheel --outdir kits/python/dist
 
+      - name: Build conformance sdist + wheel
+        run: .venv/bin/python -m build conformance/python --sdist --wheel --outdir conformance/python/dist
+
       - name: Check model dist metadata
         run: .venv/bin/python -m twine check models/python/dist/*
 
@@ -185,6 +203,9 @@ jobs:
 
       - name: Check server dist metadata
         run: .venv/bin/python -m twine check kits/python/dist/*
+
+      - name: Check conformance dist metadata
+        run: .venv/bin/python -m twine check conformance/python/dist/*
 
       - name: Verify dist dependencies
         run: .venv/bin/python tools/codegen/python/verify_dist_dependencies.py
@@ -204,8 +225,13 @@ jobs:
           name: python-server-dist
           path: kits/python/dist/*
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-conformance-dist
+          path: conformance/python/dist/*
+
   publish-python-packages:
-    name: Publish Python model/client/server packages
+    name: Publish Python model/client/server/conformance packages
     needs: build-python-packages
     runs-on: ubuntu-latest
     permissions:
@@ -226,6 +252,11 @@ jobs:
         with:
           name: python-server-dist
           path: dist/server
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-conformance-dist
+          path: dist/conformance
 
       - name: Publish model to TestPyPI (trusted publishing)
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
@@ -248,6 +279,13 @@ jobs:
           packages-dir: dist/server
           repository-url: https://test.pypi.org/legacy/
 
+      - name: Publish conformance to TestPyPI (trusted publishing)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/conformance
+          repository-url: https://test.pypi.org/legacy/
+
       - name: Publish model to PyPI (trusted publishing)
         if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -265,6 +303,12 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/server
+
+      - name: Publish conformance to PyPI (trusted publishing)
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_to == 'pypi')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/conformance
 
   github-release:
     name: GitHub Release (Python packages)
@@ -289,6 +333,11 @@ jobs:
           name: python-server-dist
           path: dist/server
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-conformance-dist
+          path: dist/conformance
+
       - name: Create GitHub Release (with artifacts)
         uses: softprops/action-gh-release@v2
         with:
@@ -300,4 +349,5 @@ jobs:
             dist/model/*
             dist/client/*
             dist/server/*
+            dist/conformance/*
           fail_on_unmatched_files: true

@@ -1,0 +1,41 @@
+{
+  "title": "Health",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "time"],
+  "properties": {
+    "status": {
+      "$ref": "status.schema.json"
+    },
+    "time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "status.schema.json"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}

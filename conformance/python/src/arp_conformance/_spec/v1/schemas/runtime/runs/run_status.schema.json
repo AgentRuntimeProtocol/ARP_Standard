@@ -1,0 +1,28 @@
+{
+  "title": "RunStatus",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "state"],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "state": {
+      "$ref": "run_state.schema.json"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "runtime_instance_id": {
+      "type": "string"
+    },
+    "extensions": {
+      "$ref": "../../common/extensions.schema.json"
+    }
+  }
+}

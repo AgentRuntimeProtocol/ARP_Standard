@@ -44,13 +44,16 @@ def main() -> int:
     model_root = repo_root / "models" / "python"
     client_root = repo_root / "clients" / "python"
     server_root = repo_root / "kits" / "python"
+    conformance_root = repo_root / "conformance" / "python"
 
     model_version = _read_version(model_root / "pyproject.toml")
     client_version = _read_version(client_root / "pyproject.toml")
     server_version = _read_version(server_root / "pyproject.toml")
-    if model_version != client_version or model_version != server_version:
+    conformance_version = _read_version(conformance_root / "pyproject.toml")
+    if model_version != client_version or model_version != server_version or model_version != conformance_version:
         print(
-            f"Version mismatch: model={model_version} client={client_version} server={server_version}",
+            "Version mismatch: "
+            f"model={model_version} client={client_version} server={server_version} conformance={conformance_version}",
             file=sys.stderr,
         )
         return 1
@@ -59,10 +62,12 @@ def main() -> int:
     model_spec_ref = _read_spec_ref(model_root / "src" / "arp_standard_model" / "__init__.py")
     client_spec_ref = _read_spec_ref(client_root / "src" / "arp_standard_client" / "__init__.py")
     server_spec_ref = _read_spec_ref(server_root / "src" / "arp_standard_server" / "__init__.py")
+    conformance_spec_ref = _read_spec_ref(conformance_root / "src" / "arp_conformance" / "__init__.py")
     for name, value in [
         ("model", model_spec_ref),
         ("client", client_spec_ref),
         ("server", server_spec_ref),
+        ("conformance", conformance_spec_ref),
     ]:
         if value != expected_spec_ref:
             print(f"{name} SPEC_REF mismatch: {value} (expected {expected_spec_ref})", file=sys.stderr)
@@ -71,6 +76,7 @@ def main() -> int:
     model_wheels = _find_wheels(model_root / "dist")
     client_wheels = _find_wheels(client_root / "dist")
     server_wheels = _find_wheels(server_root / "dist")
+    conformance_wheels = _find_wheels(conformance_root / "dist")
     if not model_wheels:
         print("Missing model wheel in models/python/dist", file=sys.stderr)
         return 1
@@ -80,10 +86,14 @@ def main() -> int:
     if not server_wheels:
         print("Missing server wheel in kits/python/dist", file=sys.stderr)
         return 1
+    if not conformance_wheels:
+        print("Missing conformance wheel in conformance/python/dist", file=sys.stderr)
+        return 1
 
     model_match = any(re.search(rf"{re.escape(model_version)}", wheel.name) for wheel in model_wheels)
     client_match = any(re.search(rf"{re.escape(client_version)}", wheel.name) for wheel in client_wheels)
     server_match = any(re.search(rf"{re.escape(server_version)}", wheel.name) for wheel in server_wheels)
+    conformance_match = any(re.search(rf"{re.escape(conformance_version)}", wheel.name) for wheel in conformance_wheels)
     if not model_match:
         print(f"No model wheel matches version {model_version}", file=sys.stderr)
         return 1
@@ -92,6 +102,9 @@ def main() -> int:
         return 1
     if not server_match:
         print(f"No server wheel matches version {server_version}", file=sys.stderr)
+        return 1
+    if not conformance_match:
+        print(f"No conformance wheel matches version {conformance_version}", file=sys.stderr)
         return 1
 
     required = f"arp-standard-model=={model_version}"
@@ -113,6 +126,18 @@ def main() -> int:
     if missing_server:
         print(f"Server wheel missing dependency: {required}", file=sys.stderr)
         return 1
+
+    forbidden = {"arp-standard-model", "arp-standard-client", "arp-standard-server"}
+    for wheel in conformance_wheels:
+        lines = _wheel_metadata(wheel)
+        for line in lines:
+            if not line.startswith("Requires-Dist:"):
+                continue
+            req = line.split(":", 1)[1].strip()
+            name = re.split(r"[ ;(<=>]", req, 1)[0].strip()
+            if name in forbidden:
+                print(f"Conformance wheel has forbidden dependency: {req}", file=sys.stderr)
+                return 1
 
     print("OK: dist dependencies verified")
     return 0

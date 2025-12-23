@@ -1,0 +1,199 @@
+name: "ARP Conformance"
+description: "Install arp-conformance from PyPI and run it against your ARP endpoints."
+
+inputs:
+  python_version:
+    description: "Python version for the runner"
+    required: false
+    default: "3.11"
+
+  package_version:
+    description: "arp-conformance version to install (empty = use action ref if vX.Y.Z, else latest)"
+    required: false
+    default: ""
+
+  service:
+    description: "Service to check: runtime | tool-registry | daemon | all"
+    required: true
+
+  tier:
+    description: "Tier to run: smoke | surface | core | deep"
+    required: false
+    default: "smoke"
+
+  url:
+    description: "Base URL for single-service checks"
+    required: false
+    default: ""
+
+  runtime_url:
+    description: "Runtime base URL (for service=all)"
+    required: false
+    default: ""
+
+  tool_registry_url:
+    description: "Tool Registry base URL (for service=all)"
+    required: false
+    default: ""
+
+  daemon_url:
+    description: "Daemon base URL (for service=all)"
+    required: false
+    default: ""
+
+  tool_id:
+    description: "Tool ID to invoke (tool-registry core/deep)"
+    required: false
+    default: ""
+
+  tool_name:
+    description: "Tool name to invoke (tool-registry core/deep)"
+    required: false
+    default: ""
+
+  runtime_profile:
+    description: "Daemon runtime profile to use/create (daemon core/deep)"
+    required: false
+    default: ""
+
+  headers:
+    description: "Optional headers as multiline KEY=VALUE pairs"
+    required: false
+    default: ""
+
+  allow_mutations:
+    description: "Set to true for core/deep tiers"
+    required: false
+    default: "false"
+
+  strict:
+    description: "Treat WARN/SKIP as failures"
+    required: false
+    default: "false"
+
+  report_format:
+    description: "Report format: text | json | junit"
+    required: false
+    default: "json"
+
+  report_path:
+    description: "Where to write the report (file path)"
+    required: false
+    default: "arp-conformance.json"
+
+  upload_artifact:
+    description: "Upload report as a workflow artifact"
+    required: false
+    default: "true"
+
+  artifact_name:
+    description: "Artifact name when upload_artifact=true"
+    required: false
+    default: "arp-conformance-report"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    - name: Install arp-conformance
+      shell: bash
+      run: |
+        set -euo pipefail
+        python -m pip install --upgrade pip
+        VERSION="${{ inputs.package_version }}"
+        if [[ -z "$VERSION" && "${GITHUB_ACTION_REF:-}" =~ ^v[0-9] ]]; then
+          VERSION="${GITHUB_ACTION_REF#v}"
+        fi
+        if [[ -n "$VERSION" ]]; then
+          python -m pip install "arp-conformance==${VERSION}"
+        else
+          python -m pip install arp-conformance
+        fi
+
+    - name: Write headers file (optional)
+      if: ${{ inputs.headers != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > arp-conformance.headers <<'EOF'
+        ${{ inputs.headers }}
+        EOF
+
+    - name: Run arp-conformance
+      shell: bash
+      run: |
+        set -euo pipefail
+        MUTATIONS=()
+        if [[ "${{ inputs.allow_mutations }}" == "true" ]]; then
+          MUTATIONS+=(--allow-mutations)
+        fi
+        STRICT=()
+        if [[ "${{ inputs.strict }}" == "true" ]]; then
+          STRICT+=(--strict)
+        fi
+        HDRS=()
+        if [[ "${{ inputs.headers }}" != "" ]]; then
+          HDRS+=(--headers-file arp-conformance.headers)
+        fi
+
+        if [[ "${{ inputs.service }}" == "all" ]]; then
+          URL_ARGS=()
+          RUNTIME_URL="${{ inputs.runtime_url }}"
+          TOOL_REGISTRY_URL="${{ inputs.tool_registry_url }}"
+          DAEMON_URL="${{ inputs.daemon_url }}"
+          if [[ -n "$RUNTIME_URL" ]]; then
+            URL_ARGS+=(--runtime-url "$RUNTIME_URL")
+          fi
+          if [[ -n "$TOOL_REGISTRY_URL" ]]; then
+            URL_ARGS+=(--tool-registry-url "$TOOL_REGISTRY_URL")
+          fi
+          if [[ -n "$DAEMON_URL" ]]; then
+            URL_ARGS+=(--daemon-url "$DAEMON_URL")
+          fi
+          arp-conformance check all \
+            --tier "${{ inputs.tier }}" \
+            --format "${{ inputs.report_format }}" \
+            --out "${{ inputs.report_path }}" \
+            "${HDRS[@]}" \
+            "${MUTATIONS[@]}" \
+            "${STRICT[@]}" \
+            "${URL_ARGS[@]}"
+        else
+          if [[ -z "${{ inputs.url }}" ]]; then
+            echo "inputs.url is required when inputs.service is not 'all'"
+            exit 2
+          fi
+          EXTRA=()
+          if [[ "${{ inputs.service }}" == "tool-registry" ]]; then
+            if [[ -n "${{ inputs.tool_id }}" ]]; then
+              EXTRA+=(--tool-id "${{ inputs.tool_id }}")
+            fi
+            if [[ -n "${{ inputs.tool_name }}" ]]; then
+              EXTRA+=(--tool-name "${{ inputs.tool_name }}")
+            fi
+          fi
+          if [[ "${{ inputs.service }}" == "daemon" ]]; then
+            if [[ -n "${{ inputs.runtime_profile }}" ]]; then
+              EXTRA+=(--runtime-profile "${{ inputs.runtime_profile }}")
+            fi
+          fi
+          arp-conformance check "${{ inputs.service }}" \
+            --url "${{ inputs.url }}" \
+            --tier "${{ inputs.tier }}" \
+            --format "${{ inputs.report_format }}" \
+            --out "${{ inputs.report_path }}" \
+            "${HDRS[@]}" \
+            "${MUTATIONS[@]}" \
+            "${STRICT[@]}" \
+            "${EXTRA[@]}"
+        fi
+
+    - name: Upload report artifact
+      if: ${{ inputs.upload_artifact == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: ${{ inputs.report_path }}

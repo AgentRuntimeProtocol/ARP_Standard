@@ -13,6 +13,11 @@ build/
 coverage.xml
 artifacts/
 
+# arp-conformance outputs
+arp-conformance*.json
+arp-conformance*.xml
+arp-conformance.headers
+
 # Generated client source (local-only; produced by tools/codegen)
 clients/python/src/arp_standard_client/*/
 !clients/python/src/arp_standard_client/clients/

@@ -1,0 +1,22 @@
+{
+  "title": "ResourceRef",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type", "id"],
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}
+

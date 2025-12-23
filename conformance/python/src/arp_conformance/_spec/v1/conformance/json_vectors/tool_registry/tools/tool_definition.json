@@ -1,0 +1,14 @@
+{
+  "tool_id": "tool_echo",
+  "name": "echo",
+  "input_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["text"],
+    "properties": {
+      "text": { "type": "string" }
+    }
+  },
+  "source": "registry_local"
+}
+

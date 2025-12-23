@@ -1,0 +1,5 @@
+{
+  "title": "Type",
+  "type": "string",
+  "enum": ["token", "step", "tool_call", "tool_result", "final", "error"]
+}

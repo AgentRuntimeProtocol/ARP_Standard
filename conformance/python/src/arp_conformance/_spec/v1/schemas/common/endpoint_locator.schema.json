@@ -1,0 +1,6 @@
+{
+  "title": "EndpointLocator",
+  "description": "Transport-agnostic locator URI for an API endpoint (e.g. http://127.0.0.1:43120). Future deployments may use other URI schemes (e.g. unix://...).",
+  "type": "string",
+  "format": "uri"
+}

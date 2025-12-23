@@ -1,0 +1,23 @@
+{
+  "title": "Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "labels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "annotations": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "extensions": {
+      "$ref": "extensions.schema.json"
+    }
+  }
+}
+

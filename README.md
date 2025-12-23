@@ -47,6 +47,7 @@ ARP is:
 - Generated Python client: [`clients/python/`](clients/python/README.md)
 - Generated Python models: [`models/python/`](models/python/README.md)
 - Generated Python server bases: [`kits/python/`](kits/python/README.md)
+- Conformance checker (Python): [`conformance/python/`](conformance/python/README.md)
 - Tooling (codegen, validation): [`tools/`](tools/)
 
 ## Start here
@@ -98,6 +99,9 @@ Standard design goals:
 - Capability discovery: clients can detect supported feature sets to avoid lockstep upgrades.
 - Conformance testing in client/server packages: generated client and server packages are validated against the schemas to provide reliable artifacts that adhere to the standard.
 
+In addition, ARP ships an official endpoint-level conformance checker:
+- `arp-conformance` validates running Runtime / Tool Registry / Daemon services against the ARP Standard schemas.
+
 ## Clients and server bases
 
 Client packages are client-focused libraries for talking to ARP components (Runtime, Tool Registry, Daemon). Use them to easily communicate with any ARP-compliant component.
@@ -130,6 +134,13 @@ Server bases:
 
 ```bash
 python3 -m pip install arp-standard-server
+```
+
+### Conformance checker (Python CLI)
+
+```bash
+python3 -m pip install arp-conformance
+arp-conformance check runtime --url http://127.0.0.1:8081 --tier smoke
 ```
 
 ### Quick example

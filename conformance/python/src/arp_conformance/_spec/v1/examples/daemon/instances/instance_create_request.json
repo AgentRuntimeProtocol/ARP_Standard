@@ -1,0 +1,11 @@
+{
+  "runtime_profile": "default",
+  "count": 1,
+  "overrides": {
+    "env": {
+      "LOG_LEVEL": "info"
+    },
+    "args": ["--serve"],
+    "tool_registry_url": "http://127.0.0.1:9000"
+  }
+}

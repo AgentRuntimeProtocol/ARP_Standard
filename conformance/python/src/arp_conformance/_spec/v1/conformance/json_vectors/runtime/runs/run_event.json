@@ -1,0 +1,10 @@
+{
+  "run_id": "run_123",
+  "seq": 0,
+  "type": "step",
+  "time": "2025-01-01T00:00:00Z",
+  "data": {
+    "name": "start"
+  }
+}
+

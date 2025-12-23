@@ -6,7 +6,7 @@ on:
 
 jobs:
   codegen-python-packages:
-    name: Codegen Python model/client/server packages
+    name: Codegen Python model/client/server/conformance packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +41,9 @@ jobs:
       - name: Generate Python server
         run: .venv/bin/python tools/codegen/python/server/generate.py --version v1
 
+      - name: Sync embedded conformance spec snapshot
+        run: .venv/bin/python tools/conformance/sync_spec.py --version v1
+
       - name: Create codegen report
         run: |
           mkdir -p artifacts
@@ -60,6 +63,9 @@ jobs:
       - name: Install Python server (dev)
         run: .venv/bin/python -m pip install -e "kits/python"
 
+      - name: Install Python conformance (dev)
+        run: .venv/bin/python -m pip install -e "conformance/python"
+
       - name: Pyright
         run: .venv/bin/pyright -p clients/python/pyrightconfig.json
 
@@ -78,6 +84,9 @@ jobs:
       - name: Build server sdist + wheel
         run: .venv/bin/python -m build kits/python --sdist --wheel --outdir kits/python/dist
 
+      - name: Build conformance sdist + wheel
+        run: .venv/bin/python -m build conformance/python --sdist --wheel --outdir conformance/python/dist
+
       - name: Check model dist metadata
         run: .venv/bin/python -m twine check models/python/dist/*
 
@@ -86,6 +95,9 @@ jobs:
 
       - name: Check server dist metadata
         run: .venv/bin/python -m twine check kits/python/dist/*
+
+      - name: Check conformance dist metadata
+        run: .venv/bin/python -m twine check conformance/python/dist/*
 
       - name: Verify dist dependencies
         run: .venv/bin/python tools/codegen/python/verify_dist_dependencies.py

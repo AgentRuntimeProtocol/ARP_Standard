@@ -1,0 +1,10 @@
+{
+  "run_id": "run_123",
+  "input": {
+    "goal": "Write a haiku about protocols."
+  },
+  "limits": {
+    "timeout_ms": 60000,
+    "max_steps": 10
+  }
+}
