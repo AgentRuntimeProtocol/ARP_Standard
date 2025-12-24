@@ -106,69 +106,70 @@ release_build:
     - .venv/bin/python -m pip install -r tools/codegen/python/client/requirements-dev.txt
     - .venv/bin/python -m pip install -r tools/codegen/python/server/requirements.txt
     - .venv/bin/python -m pip install -r tools/validate/requirements.txt
-    - .venv/bin/python - <<'PY'
-        import os
-        import re
-        import tomllib
-        from pathlib import Path
+    - |
+      .venv/bin/python - <<'PY'
+      import os
+      import re
+      import tomllib
+      from pathlib import Path
 
-        model_pyproject = Path("models/python/pyproject.toml")
-        model_init = Path("models/python/src/arp_standard_model/__init__.py")
-        client_pyproject = Path("clients/python/pyproject.toml")
-        client_init = Path("clients/python/src/arp_standard_client/__init__.py")
-        server_pyproject = Path("kits/python/pyproject.toml")
-        server_init = Path("kits/python/src/arp_standard_server/__init__.py")
-        conformance_pyproject = Path("conformance/python/pyproject.toml")
-        conformance_init = Path("conformance/python/src/arp_conformance/__init__.py")
+      model_pyproject = Path("models/python/pyproject.toml")
+      model_init = Path("models/python/src/arp_standard_model/__init__.py")
+      client_pyproject = Path("clients/python/pyproject.toml")
+      client_init = Path("clients/python/src/arp_standard_client/__init__.py")
+      server_pyproject = Path("kits/python/pyproject.toml")
+      server_init = Path("kits/python/src/arp_standard_server/__init__.py")
+      conformance_pyproject = Path("conformance/python/pyproject.toml")
+      conformance_init = Path("conformance/python/src/arp_conformance/__init__.py")
 
-        def _read_pyproject(path: Path) -> str:
-            pyproject = tomllib.loads(path.read_text(encoding="utf-8"))
-            return pyproject["project"]["version"]
+      def _read_pyproject(path: Path) -> str:
+          pyproject = tomllib.loads(path.read_text(encoding="utf-8"))
+          return pyproject["project"]["version"]
 
-        def _read_init(path: Path) -> str:
-            text = path.read_text(encoding="utf-8")
-            match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', text)
-            if not match:
-                raise SystemExit(f"Unable to find __version__ in {path}")
-            return match.group(1)
+      def _read_init(path: Path) -> str:
+          text = path.read_text(encoding="utf-8")
+          match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', text)
+          if not match:
+              raise SystemExit(f"Unable to find __version__ in {path}")
+          return match.group(1)
 
-        model_version = _read_pyproject(model_pyproject)
-        client_version = _read_pyproject(client_pyproject)
-        server_version = _read_pyproject(server_pyproject)
-        conformance_version = _read_pyproject(conformance_pyproject)
-        model_init_version = _read_init(model_init)
-        client_init_version = _read_init(client_init)
-        server_init_version = _read_init(server_init)
-        conformance_init_version = _read_init(conformance_init)
+      model_version = _read_pyproject(model_pyproject)
+      client_version = _read_pyproject(client_pyproject)
+      server_version = _read_pyproject(server_pyproject)
+      conformance_version = _read_pyproject(conformance_pyproject)
+      model_init_version = _read_init(model_init)
+      client_init_version = _read_init(client_init)
+      server_init_version = _read_init(server_init)
+      conformance_init_version = _read_init(conformance_init)
 
-        if model_version != client_version or model_version != server_version or model_version != conformance_version:
-            raise SystemExit(
-                "Version mismatch: "
-                f"model={model_version} client={client_version} server={server_version} conformance={conformance_version}"
-            )
-        if model_init_version != model_version:
-            raise SystemExit(
-                f"Version mismatch: {model_pyproject}={model_version} vs {model_init}={model_init_version}"
-            )
-        if client_init_version != client_version:
-            raise SystemExit(
-                f"Version mismatch: {client_pyproject}={client_version} vs {client_init}={client_init_version}"
-            )
-        if server_init_version != server_version:
-            raise SystemExit(
-                f"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}"
-            )
-        if conformance_init_version != conformance_version:
-            raise SystemExit(
-                f"Version mismatch: {conformance_pyproject}={conformance_version} vs {conformance_init}={conformance_init_version}"
-            )
+      if model_version != client_version or model_version != server_version or model_version != conformance_version:
+          raise SystemExit(
+              "Version mismatch: "
+              f"model={model_version} client={client_version} server={server_version} conformance={conformance_version}"
+          )
+      if model_init_version != model_version:
+          raise SystemExit(
+              f"Version mismatch: {model_pyproject}={model_version} vs {model_init}={model_init_version}"
+          )
+      if client_init_version != client_version:
+          raise SystemExit(
+              f"Version mismatch: {client_pyproject}={client_version} vs {client_init}={client_init_version}"
+          )
+      if server_init_version != server_version:
+          raise SystemExit(
+              f"Version mismatch: {server_pyproject}={server_version} vs {server_init}={server_init_version}"
+          )
+      if conformance_init_version != conformance_version:
+          raise SystemExit(
+              f"Version mismatch: {conformance_pyproject}={conformance_version} vs {conformance_init}={conformance_init_version}"
+          )
 
-        tag = os.environ.get("CI_COMMIT_TAG", "")
-        if tag.startswith("v"):
-            tag_version = tag.removeprefix("v")
-            if tag_version != client_version:
-                raise SystemExit(f"Tag/version mismatch: tag={tag_version} vs version={client_version}")
-        PY
+      tag = os.environ.get("CI_COMMIT_TAG", "")
+      if tag.startswith("v"):
+          tag_version = tag.removeprefix("v")
+          if tag_version != client_version:
+              raise SystemExit(f"Tag/version mismatch: tag={tag_version} vs version={client_version}")
+      PY
     - .venv/bin/python tools/lint/lint_json.py
     - .venv/bin/python tools/validate/validate_json_vectors.py --version v1 --include-examples
     - .venv/bin/python tools/validate/validate_openapi.py --version v1
