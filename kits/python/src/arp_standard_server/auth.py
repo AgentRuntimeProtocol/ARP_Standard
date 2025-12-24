@@ -4,11 +4,12 @@ import json
 import os
 import urllib.error
 import urllib.request
+from collections.abc import Mapping
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-import anyio
+from anyio.to_thread import run_sync
 import jwt
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -38,39 +39,39 @@ class AuthSettings:
     anonymous_subject: str = "anonymous"
 
     @classmethod
-    def from_env(cls, environ: dict[str, str] | None = None) -> "AuthSettings":
-        environ = os.environ if environ is None else environ
-        mode = (environ.get("ARP_AUTH_MODE") or "required").strip().lower()
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> "AuthSettings":
+        env: Mapping[str, str] = os.environ if environ is None else environ
+        mode = (env.get("ARP_AUTH_MODE") or "required").strip().lower()
         if mode not in {"required", "optional", "disabled"}:
             raise ValueError(f"Invalid ARP_AUTH_MODE: {mode!r}")
 
-        clock_skew_raw = (environ.get("ARP_AUTH_CLOCK_SKEW_SECONDS") or "60").strip()
+        clock_skew_raw = (env.get("ARP_AUTH_CLOCK_SKEW_SECONDS") or "60").strip()
         try:
             clock_skew_seconds = int(clock_skew_raw)
         except ValueError as exc:
             raise ValueError(f"Invalid ARP_AUTH_CLOCK_SKEW_SECONDS: {clock_skew_raw!r}") from exc
 
-        algorithms_raw = (environ.get("ARP_AUTH_ALGORITHMS") or "RS256").strip()
+        algorithms_raw = (env.get("ARP_AUTH_ALGORITHMS") or "RS256").strip()
         algorithms = tuple(part.strip() for part in algorithms_raw.split(",") if part.strip())
         if not algorithms:
             raise ValueError("ARP_AUTH_ALGORITHMS must include at least one algorithm (for example: RS256)")
 
-        exempt_raw = (environ.get("ARP_AUTH_EXEMPT_PATHS") or "/v1/health,/v1/version").strip()
+        exempt_raw = (env.get("ARP_AUTH_EXEMPT_PATHS") or "/v1/health,/v1/version").strip()
         exempt_paths = tuple(part.strip() for part in exempt_raw.split(",") if part.strip())
         if not exempt_paths:
             exempt_paths = ("/v1/health", "/v1/version")
 
         return cls(
             mode=mode,  # type: ignore[arg-type]
-            issuer=(environ.get("ARP_AUTH_ISSUER") or None),
-            audience=(environ.get("ARP_AUTH_AUDIENCE") or None),
-            jwks_uri=(environ.get("ARP_AUTH_JWKS_URI") or None),
-            oidc_discovery_url=(environ.get("ARP_AUTH_OIDC_DISCOVERY_URL") or None),
+            issuer=(env.get("ARP_AUTH_ISSUER") or None),
+            audience=(env.get("ARP_AUTH_AUDIENCE") or None),
+            jwks_uri=(env.get("ARP_AUTH_JWKS_URI") or None),
+            oidc_discovery_url=(env.get("ARP_AUTH_OIDC_DISCOVERY_URL") or None),
             algorithms=algorithms,
             clock_skew_seconds=clock_skew_seconds,
             exempt_paths=exempt_paths,
-            dev_subject=(environ.get("ARP_AUTH_DEV_SUBJECT") or "dev"),
-            anonymous_subject=(environ.get("ARP_AUTH_ANONYMOUS_SUBJECT") or "anonymous"),
+            dev_subject=(env.get("ARP_AUTH_DEV_SUBJECT") or "dev"),
+            anonymous_subject=(env.get("ARP_AUTH_ANONYMOUS_SUBJECT") or "anonymous"),
         )
 
 
@@ -204,7 +205,7 @@ def register_auth_middleware(app: FastAPI, *, settings: AuthSettings) -> None:
         bearer_token = parts[1].strip()
         assert authenticator is not None
         try:
-            principal = await anyio.to_thread.run_sync(authenticator.decode, bearer_token)
+            principal = await run_sync(authenticator.decode, bearer_token)
         except jwt.ExpiredSignatureError:
             return _unauthorized(error="invalid_token", message="Token expired")
         except jwt.InvalidAudienceError:
@@ -226,4 +227,3 @@ def register_auth_middleware(app: FastAPI, *, settings: AuthSettings) -> None:
 
 def get_principal() -> Principal | None:
     return principal_var.get()
-
