@@ -94,7 +94,7 @@ arp-conformance check daemon --url http://localhost:8083 --tier core --allow-mut
 ### Example output (text)
 
 ```text
-service=runtime tier=surface spec=spec/v1@v0.2.4
+service=runtime tier=surface spec=spec/v1@v0.2.6
 counts={'PASS': 10, 'FAIL': 0, 'WARN': 0, 'SKIP': 0} ok=True
 - PASS smoke.health: OK
 - PASS smoke.version: OK
@@ -118,7 +118,7 @@ arp-conformance check runtime --url http://localhost:8081 --tier core --allow-mu
 Rule of thumb: pin `arp-conformance==X.Y.Z` to validate services targeting the ARP spec / SDK release `X.Y.Z`.
 
 ```bash
-pipx install "arp-conformance==0.2.4"
+pipx install "arp-conformance==0.2.6"
 arp-conformance --version
 python -c "import arp_conformance; print(arp_conformance.SPEC_REF)"
 ```
@@ -180,7 +180,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Start your service under test (docker compose, process, etc) before running conformance.
-      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.2.4
+      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.2.6
         with:
           service: runtime
           url: http://localhost:8081
@@ -202,7 +202,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Start your service under test (docker compose, process, etc) before running conformance.
-      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.2.4
+      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.2.6
         with:
           service: runtime
           url: http://localhost:8081
@@ -378,7 +378,7 @@ print(report.to_json())
 
 ## Spec reference
 
-`arp_conformance.SPEC_REF` exposes the spec tag used by the package (for example, `spec/v1@v0.2.4`).
+`arp_conformance.SPEC_REF` exposes the spec tag used by the package (for example, `spec/v1@v0.2.6`).
 
 The embedded spec snapshot lives under `arp_conformance/_spec/` inside the wheel.
 

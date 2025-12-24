@@ -1,6 +1,6 @@
 # Changelog — `v1`
 
-## 0.2.4
+## 0.2.6
 
 - Add JWT Bearer authentication (`ArpBearerJWT`) to all service OpenAPI contracts and make endpoints secure-by-default (with `/v1/health` and `/v1/version` as explicit unauthenticated carve-outs).
 - Standardize `401`/`403` responses for protected endpoints (`ErrorEnvelope`, plus `WWW-Authenticate` on `401`).

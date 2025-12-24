@@ -73,7 +73,7 @@ for line in text.splitlines():
 
 ## Spec reference
 
-`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.4`) used to generate the package.
+`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.6`) used to generate the package.
 
 ## See also
 

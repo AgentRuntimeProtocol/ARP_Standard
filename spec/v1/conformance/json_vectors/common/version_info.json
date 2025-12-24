@@ -1,5 +1,5 @@
 {
   "service_name": "arp-jarvis-runtime",
-  "service_version": "0.2.4",
+  "service_version": "0.2.6",
   "supported_api_versions": ["v1"]
 }
