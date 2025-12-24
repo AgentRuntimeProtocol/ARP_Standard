@@ -33,14 +33,6 @@ validate_examples:
       when: never
     - when: on_success
 
-bundle_openapi:
-  stage: validate
-  image: alpine:3.19
-  script:
-    - echo "OpenAPI bundling is toolchain-dependent; see tools/bundle/README.md"
-  rules:
-    - when: manual
-
 codegen_python:
   stage: codegen
   image: python:3.11
