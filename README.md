@@ -149,7 +149,7 @@ arp-conformance check runtime --url http://127.0.0.1:8081 --tier smoke
 from arp_standard_client.daemon import DaemonClient
 from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
 
-client = DaemonClient(base_url="http://127.0.0.1:8082")
+client = DaemonClient(base_url="http://127.0.0.1:8082", bearer_token="your-jwt")
 created = client.create_instances(
     DaemonCreateInstancesRequest(
         body=InstanceCreateRequestBody(runtime_profile="default", count=1)
@@ -169,15 +169,17 @@ class MyDaemon(BaseDaemonServer):
         body = request.body
         return ...
 
-app = MyDaemon().create_app()
+from arp_standard_server import AuthSettings
+
+app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
-### Authentication (API key)
+### Authentication (JWT Bearer)
 
 ```python
 client = DaemonClient(
     base_url="http://127.0.0.1:8082",
-    headers={"X-API-Key": "your-api-key"},
+    bearer_token="your-jwt",
 )
 ```
 
@@ -189,7 +191,7 @@ Streaming endpoints currently return NDJSON as plain text. Helpers are planned b
 from arp_standard_client.runtime import RuntimeClient
 from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
 
-runtime = RuntimeClient(base_url="http://127.0.0.1:8081")
+runtime = RuntimeClient(base_url="http://127.0.0.1:8081", bearer_token="your-jwt")
 text = runtime.get_run_events(
     RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
 )

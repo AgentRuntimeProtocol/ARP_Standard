@@ -2,10 +2,13 @@ openapi: 3.0.3
 info:
   title: ARP Memory API (placeholder)
   version: v1
+security:
+  - ArpBearerJWT: []
 paths:
   /v1/health:
     get:
       summary: Health
+      security: []
       responses:
         "200":
           description: Health response
@@ -22,6 +25,7 @@ paths:
   /v1/version:
     get:
       summary: Version
+      security: []
       responses:
         "200":
           description: Version response
@@ -36,6 +40,28 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
 components:
+  securitySchemes:
+    ArpBearerJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
   schemas:
     Health:
       $ref: ../schemas/common/health.schema.json

@@ -25,7 +25,7 @@ python3 -m pip install arp-standard-model
 from arp_standard_client.daemon import DaemonClient
 from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
 
-client = DaemonClient(base_url="http://127.0.0.1:8082")
+client = DaemonClient(base_url="http://127.0.0.1:8082", bearer_token="your-jwt")
 created = client.create_instances(
     DaemonCreateInstancesRequest(
         body=InstanceCreateRequestBody(runtime_profile="default", count=1)
@@ -34,14 +34,14 @@ created = client.create_instances(
 print(created.model_dump(exclude_none=True))
 ```
 
-## Authentication (API key)
+## Authentication (JWT Bearer)
 
-Pass API keys via headers when constructing the client:
+Pass a JWT when constructing the client:
 
 ```python
 client = DaemonClient(
     base_url="http://127.0.0.1:8082",
-    headers={"X-API-Key": "your-api-key"},
+    bearer_token="your-jwt",
 )
 ```
 
@@ -55,7 +55,7 @@ You can manually split the response for now:
 from arp_standard_client.runtime import RuntimeClient
 from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
 
-runtime = RuntimeClient(base_url="http://127.0.0.1:8081")
+runtime = RuntimeClient(base_url="http://127.0.0.1:8081", bearer_token="your-jwt")
 text = runtime.get_run_events(
     RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
 )
@@ -94,7 +94,7 @@ Models ignore unknown fields by default (Pydantic v2 behavior), so newer servers
 
 ## Spec reference
 
-Each package exports `SPEC_REF` (for example, `spec/v1@v0.2.2`) to indicate the spec tag used to generate the package.
+Each package exports `SPEC_REF` (for example, `spec/v1@v0.2.4`) to indicate the spec tag used to generate the package.
 
 ## Generate locally (developers)
 
@@ -117,8 +117,8 @@ python3 tools/codegen/python/client/generate.py
 2. Tag the release:
 
 ```bash
-git tag v0.2.2
-git push origin v0.2.2
+git tag v0.2.4
+git push origin v0.2.4
 ```
 
 ## See also

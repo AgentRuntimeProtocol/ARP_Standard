@@ -19,7 +19,7 @@ from arp_standard_model import (
     InstanceCreateRequestBody,
 )
 
-client = DaemonClient(base_url="http://127.0.0.1:8082")
+client = DaemonClient(base_url="http://127.0.0.1:8082", bearer_token="your-jwt")
 health = client.health(DaemonHealthRequest())
 instances = client.list_instances(DaemonListInstancesRequest())
 created = client.create_instances(
@@ -44,12 +44,12 @@ Request body models are also exported with a `*RequestBody` alias (e.g., `Instan
 
 Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(exclude_none=True)`.
 
-## Authentication (API key)
+## Authentication (JWT Bearer)
 
 ```python
 client = DaemonClient(
     base_url="http://127.0.0.1:8082",
-    headers={"X-API-Key": "your-api-key"},
+    bearer_token="your-jwt",
 )
 ```
 
@@ -61,7 +61,7 @@ Streaming endpoints currently return NDJSON as plain text. Helpers are planned b
 from arp_standard_client.runtime import RuntimeClient
 from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
 
-runtime = RuntimeClient(base_url="http://127.0.0.1:8081")
+runtime = RuntimeClient(base_url="http://127.0.0.1:8081", bearer_token="your-jwt")
 text = runtime.get_run_events(
     RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
 )
@@ -73,7 +73,7 @@ for line in text.splitlines():
 
 ## Spec reference
 
-`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.2`) used to generate the package.
+`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.4`) used to generate the package.
 
 ## See also
 

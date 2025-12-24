@@ -183,7 +183,7 @@ def main() -> int:
             "--output-model-type",
             "pydantic_v2.BaseModel",
             "--target-python-version",
-            "3.10",
+            "3.11",
             "--use-union-operator",
             "--reuse-model",
             "--strict-types",

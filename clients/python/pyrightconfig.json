@@ -1,7 +1,7 @@
 {
   "include": ["src/arp_standard_client"],
   "extraPaths": ["src", "../../models/python/src"],
-  "pythonVersion": "3.10",
+  "pythonVersion": "3.11",
   "venvPath": "../..",
   "venv": ".venv"
 }

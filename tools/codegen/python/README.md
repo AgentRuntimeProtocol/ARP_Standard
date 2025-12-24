@@ -49,6 +49,12 @@ python3 -m pip install -r tools/validate/requirements.txt
 python3 tools/codegen/python/build_local.py --clean
 ```
 
+If you're offline (or running with restricted network access), use:
+
+```bash
+python3 tools/codegen/python/build_local.py --clean --no-isolation
+```
+
 ## Notes
 
 - The generator bundles local `$ref` JSON Schemas into a single OpenAPI document per service for codegen purposes.

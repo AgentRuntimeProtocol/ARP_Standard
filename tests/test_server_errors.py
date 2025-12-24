@@ -1,3 +1,4 @@
+import importlib
 import sys
 import unittest
 from pathlib import Path
@@ -39,17 +40,19 @@ class TestServerErrors(unittest.TestCase):
     def test_error_envelope(self) -> None:
         if not self.generated_model.exists() or not self.request_model.exists():
             self.skipTest("Generated models missing; run codegen before tests.")
-        from arp_standard_server.errors import ArpServerError
-        from arp_standard_model import ErrorEnvelope
+        import arp_standard_model as model_module
+        import arp_standard_server.errors as errors_module
 
-        error = ArpServerError(
+        errors_module = importlib.reload(errors_module)
+
+        error = errors_module.ArpServerError(
             code="invalid_request",
             message="bad input",
             status_code=400,
             details={"field": "run_id"},
         )
         envelope = error.to_envelope()
-        self.assertIsInstance(envelope, ErrorEnvelope)
+        self.assertIsInstance(envelope, model_module.ErrorEnvelope)
         self.assertEqual(envelope.error.code, "invalid_request")
         self.assertEqual(envelope.error.message, "bad input")
         self.assertEqual(envelope.error.details, {"field": "run_id"})

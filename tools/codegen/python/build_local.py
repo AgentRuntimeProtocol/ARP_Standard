@@ -25,6 +25,11 @@ def main() -> int:
     parser.add_argument("--version", default="v1", help="Spec version directory (default: v1)")
     parser.add_argument("--clean", action="store_true", help="Remove existing dist/ before building")
     parser.add_argument("--list-wheel", action="store_true", help="List wheel contents after build")
+    parser.add_argument(
+        "--no-isolation",
+        action="store_true",
+        help="Build sdists/wheels without isolated build environments (useful when offline)",
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[3]
@@ -68,10 +73,11 @@ def main() -> int:
                 else:
                     shutil.rmtree(path)
 
-    _run([sys.executable, "-m", "build", "--sdist", "--wheel", "--outdir", "dist"], cwd=model_root)
-    _run([sys.executable, "-m", "build", "--sdist", "--wheel", "--outdir", "dist"], cwd=client_root)
-    _run([sys.executable, "-m", "build", "--sdist", "--wheel", "--outdir", "dist"], cwd=server_root)
-    _run([sys.executable, "-m", "build", "--sdist", "--wheel", "--outdir", "dist"], cwd=conformance_root)
+    build_flags = ["--no-isolation"] if args.no_isolation else []
+    _run([sys.executable, "-m", "build", *build_flags, "--sdist", "--wheel", "--outdir", "dist"], cwd=model_root)
+    _run([sys.executable, "-m", "build", *build_flags, "--sdist", "--wheel", "--outdir", "dist"], cwd=client_root)
+    _run([sys.executable, "-m", "build", *build_flags, "--sdist", "--wheel", "--outdir", "dist"], cwd=server_root)
+    _run([sys.executable, "-m", "build", *build_flags, "--sdist", "--wheel", "--outdir", "dist"], cwd=conformance_root)
 
     model_dists = sorted(model_dist_dir.glob("*"))
     client_dists = sorted(client_dist_dir.glob("*"))

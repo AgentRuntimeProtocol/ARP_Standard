@@ -12,6 +12,7 @@ python3 -m pip install arp-standard-server
 
 ```python
 from arp_standard_server.daemon import BaseDaemonServer
+from arp_standard_server import AuthSettings
 from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
 
 class MyDaemon(BaseDaemonServer):
@@ -20,7 +21,7 @@ class MyDaemon(BaseDaemonServer):
         # business logic here
         return ...
 
-app = MyDaemon().create_app()
+app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
 ## Service base classes
@@ -41,10 +42,16 @@ All server methods accept a single request object from `arp_standard_model`:
 
 Base server classes use `ABC` + `@abstractmethod`. Instantiating a class that does not implement all required endpoints raises a `TypeError` before the app is created.
 
-## Authentication (API key)
+## Authentication (JWT Bearer)
 
 ```python
-app = MyDaemon().create_app(api_key="your-api-key")
+app = MyDaemon().create_app(
+    auth_settings=AuthSettings(
+        mode="required",
+        issuer="https://issuer.example.com/realms/arp",
+        audience="arp-daemon",
+    )
+)
 ```
 
 ## Streaming (NDJSON)

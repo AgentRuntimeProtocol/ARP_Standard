@@ -14,6 +14,7 @@ python3 -m pip install arp-standard-server
 
 ```python
 from arp_standard_server.daemon import BaseDaemonServer
+from arp_standard_server import AuthSettings
 from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
 
 class MyDaemon(BaseDaemonServer):
@@ -22,7 +23,7 @@ class MyDaemon(BaseDaemonServer):
         # business logic here
         return ...
 
-app = MyDaemon().create_app()
+app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
 ## Service base classes
@@ -31,10 +32,16 @@ app = MyDaemon().create_app()
 - `BaseToolRegistryServer`
 - `BaseDaemonServer`
 
-## Authentication (API key)
+## Authentication (JWT Bearer)
 
 ```python
-app = MyDaemon().create_app(api_key="your-api-key")
+app = MyDaemon().create_app(
+    auth_settings=AuthSettings(
+        mode="required",
+        issuer="https://issuer.example.com/realms/arp",
+        audience="arp-daemon",
+    )
+)
 ```
 
 ## Request objects
@@ -74,4 +81,4 @@ python3 tools/codegen/python/server/generate.py
 
 ## Spec reference
 
-`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.2`) used to generate the package.
+`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.4`) used to generate the package.

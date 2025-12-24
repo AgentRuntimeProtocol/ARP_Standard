@@ -134,7 +134,7 @@ def main() -> int:
             if not line.startswith("Requires-Dist:"):
                 continue
             req = line.split(":", 1)[1].strip()
-            name = re.split(r"[ ;(<=>]", req, 1)[0].strip()
+            name = re.split(r"[ ;(<=>]", req, maxsplit=1)[0].strip()
             if name in forbidden:
                 print(f"Conformance wheel has forbidden dependency: {req}", file=sys.stderr)
                 return 1
