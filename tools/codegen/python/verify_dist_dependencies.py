@@ -58,7 +58,7 @@ def main() -> int:
         )
         return 1
 
-    expected_spec_ref = f"spec/v1@v{model_version}"
+    expected_spec_ref = f"spec/{args.version}@v{model_version}"
     model_spec_ref = _read_spec_ref(model_root / "src" / "arp_standard_model" / "__init__.py")
     client_spec_ref = _read_spec_ref(client_root / "src" / "arp_standard_client" / "__init__.py")
     server_spec_ref = _read_spec_ref(server_root / "src" / "arp_standard_server" / "__init__.py")

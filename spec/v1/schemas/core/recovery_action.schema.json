@@ -1,0 +1,14 @@
+{
+  "title": "RecoveryAction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["type"],
+  "properties": {
+    "type": { "$ref": "recovery_action_type.schema.json" },
+    "target_node_run_id": { "type": "string" },
+    "target_node_type_ref": { "$ref": "node_type_ref.schema.json" },
+    "message": { "type": "string" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

@@ -1,0 +1,18 @@
+{
+  "title": "CandidateSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subtask_id", "candidates"],
+  "properties": {
+    "subtask_id": { "type": "string" },
+    "candidates": {
+      "type": "array",
+      "items": { "$ref": "candidate.schema.json" }
+    },
+    "top_k": { "type": "integer", "minimum": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "constraints": { "$ref": "constraint_envelope.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

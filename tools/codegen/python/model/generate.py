@@ -136,9 +136,13 @@ def main() -> int:
     openapi_root = spec_root / "openapi"
 
     services = {
-        "runtime": openapi_root / "runtime.openapi.yaml",
-        "tool_registry": openapi_root / "tool-registry.openapi.yaml",
-        "daemon": openapi_root / "daemon.openapi.yaml",
+        "run_gateway": openapi_root / "run-gateway.openapi.yaml",
+        "run_coordinator": openapi_root / "run-coordinator.openapi.yaml",
+        "atomic_executor": openapi_root / "atomic-executor.openapi.yaml",
+        "composite_executor": openapi_root / "composite-executor.openapi.yaml",
+        "node_registry": openapi_root / "node-registry.openapi.yaml",
+        "selection": openapi_root / "selection.openapi.yaml",
+        "pdp": openapi_root / "pdp.openapi.yaml",
     }
     for name, path in services.items():
         if not path.exists():
@@ -184,6 +188,7 @@ def main() -> int:
             "pydantic_v2.BaseModel",
             "--target-python-version",
             "3.11",
+            "--use-annotated",
             "--use-union-operator",
             "--reuse-model",
             "--strict-types",
@@ -202,6 +207,7 @@ def main() -> int:
     request_models: list[tuple[str, str | None, str | None, bool]] = []
     params_models: list[tuple[str, list[tuple[str, str, bool]]]] = []
     body_aliases: dict[str, str] = {}
+    param_model_refs: set[str] = set()
     used_names: set[str] = set()
 
     for service, path in services.items():
@@ -238,7 +244,8 @@ def main() -> int:
                         continue
                     name = _safe_ident(str(raw.get("name", "")))
                     schema = raw.get("schema", {})
-                    pytype, _ = _schema_to_pytype(schema)
+                    pytype, model_refs = _schema_to_pytype(schema)
+                    param_model_refs.update(model_refs)
                     required = bool(raw.get("required")) or raw.get("in") == "path"
                     param_fields.append((name, pytype, required))
 
@@ -290,10 +297,11 @@ def main() -> int:
     request_lines.append("from typing import Any")
     request_lines.append("")
     request_lines.append("from pydantic import BaseModel")
-    if body_aliases:
+    import_models = sorted(set(body_aliases.values()) | param_model_refs)
+    if import_models:
         request_lines.append("")
         request_lines.append("from ._generated import (")
-        for alias_target in sorted(set(body_aliases.values())):
+        for alias_target in import_models:
             request_lines.append(f"    {alias_target},")
         request_lines.append(")")
     request_lines.append("")

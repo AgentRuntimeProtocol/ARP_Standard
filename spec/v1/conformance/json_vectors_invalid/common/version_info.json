@@ -1,0 +1,6 @@
+{
+  "service_version": "example",
+  "supported_api_versions": [
+    "example"
+  ]
+}

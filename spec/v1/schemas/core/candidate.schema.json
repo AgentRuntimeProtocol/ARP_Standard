@@ -1,0 +1,15 @@
+{
+  "title": "Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_type_ref"],
+  "properties": {
+    "node_type_ref": { "$ref": "node_type_ref.schema.json" },
+    "score": { "type": "number" },
+    "rationale": { "type": "string" },
+    "constraints": { "$ref": "constraint_envelope.schema.json" },
+    "metadata": { "$ref": "../common/metadata.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

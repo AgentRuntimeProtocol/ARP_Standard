@@ -1,0 +1,6 @@
+{
+  "title": "RecoveryActionType",
+  "type": "string",
+  "enum": ["retry", "remap", "decompose_further", "ask_user", "abort"]
+}
+

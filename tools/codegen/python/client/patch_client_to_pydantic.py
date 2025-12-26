@@ -41,8 +41,12 @@ def main() -> int:
     if not root.exists():
         raise FileNotFoundError(f"Missing client package root: {root}")
 
-    for service in ("runtime", "tool_registry", "daemon"):
-        _patch_tree(root / service)
+    for child in sorted(root.iterdir()):
+        if not child.is_dir():
+            continue
+        if child.name.startswith(".") or child.name.startswith("__"):
+            continue
+        _patch_tree(child)
 
     return 0
 

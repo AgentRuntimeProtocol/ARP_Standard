@@ -1,0 +1,176 @@
+openapi: 3.0.3
+info:
+  title: ARP Node Registry API
+  version: v1
+security:
+  - ArpBearerJWT: []
+paths:
+  /v1/health:
+    get:
+      summary: Health
+      operationId: health
+      tags: [health]
+      security: []
+      responses:
+        "200":
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/version:
+    get:
+      summary: Version
+      operationId: version
+      tags: [version]
+      security: []
+      responses:
+        "200":
+          description: Version response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/node-types:
+    get:
+      summary: List node types
+      operationId: list_node_types
+      tags: [node_types]
+      parameters:
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: kind
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/NodeKind"
+      responses:
+        "200":
+          description: Node type list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NodeType"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+    post:
+      summary: Publish node type
+      operationId: publish_node_type
+      tags: [node_types]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NodeTypePublishRequest"
+      responses:
+        "200":
+          description: Node type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NodeType"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/node-types/{node_type_id}:
+    get:
+      summary: Get node type
+      operationId: get_node_type
+      tags: [node_types]
+      parameters:
+        - name: node_type_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Node type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NodeType"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  securitySchemes:
+    ArpBearerJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    Health:
+      $ref: ../schemas/common/health.schema.json
+    VersionInfo:
+      $ref: ../schemas/common/version_info.schema.json
+    ErrorEnvelope:
+      $ref: ../schemas/common/error.schema.json
+    NodeKind:
+      $ref: ../schemas/core/node_kind.schema.json
+    NodeType:
+      $ref: ../schemas/core/node_type.schema.json
+    NodeTypePublishRequest:
+      $ref: ../schemas/node_registry/node_types/node_type_publish_request.schema.json

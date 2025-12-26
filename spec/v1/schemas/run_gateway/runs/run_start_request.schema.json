@@ -1,0 +1,16 @@
+{
+  "title": "RunStartRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["root_node_type_ref", "input"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "root_node_type_ref": { "$ref": "../../core/node_type_ref.schema.json" },
+    "input": { "type": "object", "additionalProperties": true },
+    "run_context": { "$ref": "../../core/run_context.schema.json" },
+    "constraints": { "$ref": "../../core/constraint_envelope.schema.json" },
+    "metadata": { "$ref": "../../common/metadata.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}
+

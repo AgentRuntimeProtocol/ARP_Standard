@@ -1,0 +1,15 @@
+{
+  "title": "PolicyDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["decision"],
+  "properties": {
+    "decision": { "$ref": "policy_decision_outcome.schema.json" },
+    "reason_code": { "type": "string" },
+    "message": { "type": "string" },
+    "approval_ref": { "$ref": "approval_ref.schema.json" },
+    "metadata": { "$ref": "../common/metadata.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

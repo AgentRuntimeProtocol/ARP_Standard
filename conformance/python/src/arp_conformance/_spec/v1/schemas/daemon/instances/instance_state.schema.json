@@ -1,5 +1,0 @@
-{
-  "title": "InstanceState",
-  "type": "string",
-  "enum": ["starting", "ready", "busy", "stopping", "stopped", "error"]
-}

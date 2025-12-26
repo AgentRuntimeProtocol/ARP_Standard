@@ -1,6 +1,4 @@
 {
-  "type": "artifact",
-  "id": "art_001",
-  "uri": "file:///var/lib/arp/artifacts/art_001.json"
+  "id": "example",
+  "type": "example"
 }
-

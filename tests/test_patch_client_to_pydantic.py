@@ -31,7 +31,7 @@ class TestPatchClientToPydantic(unittest.TestCase):
     def test_patch_tree_skips_init_and_models(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            service_root = root / "runtime"
+            service_root = root / "run_gateway"
             service_root.mkdir(parents=True)
 
             target = service_root / "api.py"
@@ -62,7 +62,7 @@ class TestPatchClientToPydantic(unittest.TestCase):
     def test_main_invokes_patch_tree(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            for service in ("runtime", "tool_registry", "daemon"):
+            for service in ("run_gateway", "node_registry", "selection"):
                 (root / service).mkdir(parents=True)
 
             calls: list[Path] = []
@@ -77,7 +77,7 @@ class TestPatchClientToPydantic(unittest.TestCase):
                 result = main()
 
             self.assertEqual(result, 0)
-            self.assertEqual([path.name for path in calls], ["runtime", "tool_registry", "daemon"])
+            self.assertEqual([path.name for path in calls], sorted(["run_gateway", "node_registry", "selection"]))
 
 
 if __name__ == "__main__":

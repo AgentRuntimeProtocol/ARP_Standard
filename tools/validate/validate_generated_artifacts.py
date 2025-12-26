@@ -17,12 +17,20 @@ def main() -> int:
 
     tracked_set = set(tracked)
     tracked_prefixes = [
-        "clients/python/src/arp_standard_client/daemon/",
-        "clients/python/src/arp_standard_client/runtime/",
-        "clients/python/src/arp_standard_client/tool_registry/",
-        "kits/python/src/arp_standard_server/daemon/",
-        "kits/python/src/arp_standard_server/runtime/",
-        "kits/python/src/arp_standard_server/tool_registry/",
+        "clients/python/src/arp_standard_client/run_gateway/",
+        "clients/python/src/arp_standard_client/run_coordinator/",
+        "clients/python/src/arp_standard_client/atomic_executor/",
+        "clients/python/src/arp_standard_client/composite_executor/",
+        "clients/python/src/arp_standard_client/node_registry/",
+        "clients/python/src/arp_standard_client/selection/",
+        "clients/python/src/arp_standard_client/pdp/",
+        "kits/python/src/arp_standard_server/run_gateway/",
+        "kits/python/src/arp_standard_server/run_coordinator/",
+        "kits/python/src/arp_standard_server/atomic_executor/",
+        "kits/python/src/arp_standard_server/composite_executor/",
+        "kits/python/src/arp_standard_server/node_registry/",
+        "kits/python/src/arp_standard_server/selection/",
+        "kits/python/src/arp_standard_server/pdp/",
     ]
     tracked_files = [
         "models/python/src/arp_standard_model/_generated.py",

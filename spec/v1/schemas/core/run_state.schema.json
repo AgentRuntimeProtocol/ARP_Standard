@@ -1,0 +1,6 @@
+{
+  "title": "RunState",
+  "type": "string",
+  "enum": ["queued", "running", "succeeded", "failed", "canceled"]
+}
+

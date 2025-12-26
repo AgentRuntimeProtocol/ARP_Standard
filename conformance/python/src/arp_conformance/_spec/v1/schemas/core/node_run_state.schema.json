@@ -1,0 +1,6 @@
+{
+  "title": "NodeRunState",
+  "type": "string",
+  "enum": ["queued", "assigned", "running", "succeeded", "failed", "canceled"]
+}
+

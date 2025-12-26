@@ -1,0 +1,6 @@
+{
+  "title": "PolicyDecisionOutcome",
+  "type": "string",
+  "enum": ["allow", "deny", "require_approval"]
+}
+

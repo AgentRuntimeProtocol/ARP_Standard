@@ -1,0 +1,14 @@
+{
+  "title": "BindingDecision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subtask_id", "chosen_node_type_ref"],
+  "properties": {
+    "subtask_id": { "type": "string" },
+    "candidate_set_id": { "type": "string" },
+    "chosen_node_type_ref": { "$ref": "node_type_ref.schema.json" },
+    "rationale": { "type": "string" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

@@ -1,0 +1,10 @@
+{
+  "title": "NodeTypePublishRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_type"],
+  "properties": {
+    "node_type": { "$ref": "../../core/node_type.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

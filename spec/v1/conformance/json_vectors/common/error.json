@@ -1,11 +1,6 @@
 {
   "error": {
-    "code": "invalid_argument",
-    "message": "Missing required field: input.goal",
-    "details": {
-      "field": "input.goal"
-    },
-    "retryable": false
+    "code": "example",
+    "message": "example"
   }
 }
-

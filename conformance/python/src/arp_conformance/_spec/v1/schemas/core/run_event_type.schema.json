@@ -1,0 +1,17 @@
+{
+  "title": "RunEventType",
+  "type": "string",
+  "enum": [
+    "run_started",
+    "node_run_assigned",
+    "composite_decomposed",
+    "candidate_set_generated",
+    "subtask_mapped",
+    "atomic_executed",
+    "node_evaluated",
+    "recovery_applied",
+    "policy_decided",
+    "run_completed"
+  ]
+}
+

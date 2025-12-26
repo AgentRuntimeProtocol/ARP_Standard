@@ -13,7 +13,9 @@ class TestServerBase(unittest.TestCase):
         ]
         for path in self.paths:
             sys.path.insert(0, str(path))
-        self.daemon_dir = self.repo_root / "kits" / "python" / "src" / "arp_standard_server" / "daemon"
+        self.run_gateway_dir = (
+            self.repo_root / "kits" / "python" / "src" / "arp_standard_server" / "run_gateway"
+        )
 
     def tearDown(self) -> None:
         for path in self.paths:
@@ -22,12 +24,12 @@ class TestServerBase(unittest.TestCase):
             except ValueError:
                 pass
 
-    def test_daemon_server_is_abstract(self) -> None:
-        if not self.daemon_dir.exists():
+    def test_run_gateway_server_is_abstract(self) -> None:
+        if not self.run_gateway_dir.exists():
             self.skipTest("Generated server package missing; run codegen before tests.")
-        from arp_standard_server.daemon import BaseDaemonServer
+        from arp_standard_server.run_gateway import BaseRunGatewayServer
 
-        self.assertTrue(inspect.isabstract(BaseDaemonServer))
+        self.assertTrue(inspect.isabstract(BaseRunGatewayServer))
 
 
 if __name__ == "__main__":

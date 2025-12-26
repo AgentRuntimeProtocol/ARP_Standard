@@ -1,9 +1,0 @@
-{
-  "instance_id": "inst_001",
-  "state": "ready",
-  "managed": true,
-  "runtime_profile": "default",
-  "runtime_name": "arp-jarvis-runtime",
-  "runtime_version": "0.2.6",
-  "runtime_api_endpoint": "http://127.0.0.1:7777"
-}

@@ -180,6 +180,12 @@ jobs:
       - name: Pyright (server)
         run: .venv/bin/pyright -p kits/python/pyrightconfig.json
 
+      - name: Pyright (models)
+        run: .venv/bin/pyright --pythonpath .venv/bin/python models/python/src/arp_standard_model
+
+      - name: Pyright (conformance)
+        run: .venv/bin/pyright --pythonpath .venv/bin/python conformance/python/src/arp_conformance
+
       - name: Unit tests
         run: .venv/bin/python -m unittest discover -s tests
 

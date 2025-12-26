@@ -12,6 +12,10 @@ python3 tools/codegen/python/server/generate.py --version v1
 ```
 
 Outputs are written under:
-- `kits/python/src/arp_standard_server/daemon/`
-- `kits/python/src/arp_standard_server/runtime/`
-- `kits/python/src/arp_standard_server/tool_registry/`
+- `kits/python/src/arp_standard_server/run_gateway/`
+- `kits/python/src/arp_standard_server/run_coordinator/`
+- `kits/python/src/arp_standard_server/atomic_executor/`
+- `kits/python/src/arp_standard_server/composite_executor/`
+- `kits/python/src/arp_standard_server/node_registry/`
+- `kits/python/src/arp_standard_server/selection/`
+- `kits/python/src/arp_standard_server/pdp/`

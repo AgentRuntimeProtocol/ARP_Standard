@@ -1,0 +1,16 @@
+{
+  "title": "AtomicExecuteRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_run_id", "run_id", "node_type_ref", "inputs"],
+  "properties": {
+    "node_run_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "node_type_ref": { "$ref": "../../core/node_type_ref.schema.json" },
+    "inputs": { "type": "object", "additionalProperties": true },
+    "run_context": { "$ref": "../../core/run_context.schema.json" },
+    "constraints": { "$ref": "../../core/constraint_envelope.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}
+

@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: ARP Selection API
+  version: v1
+security:
+  - ArpBearerJWT: []
+paths:
+  /v1/health:
+    get:
+      summary: Health
+      operationId: health
+      tags: [health]
+      security: []
+      responses:
+        "200":
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/version:
+    get:
+      summary: Version
+      operationId: version
+      tags: [version]
+      security: []
+      responses:
+        "200":
+          description: Version response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/candidate-sets:
+    post:
+      summary: Generate candidate set
+      operationId: generate_candidate_set
+      tags: [candidate_sets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CandidateSetRequest"
+      responses:
+        "200":
+          description: Candidate set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CandidateSet"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  securitySchemes:
+    ArpBearerJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    Health:
+      $ref: ../schemas/common/health.schema.json
+    VersionInfo:
+      $ref: ../schemas/common/version_info.schema.json
+    ErrorEnvelope:
+      $ref: ../schemas/common/error.schema.json
+    CandidateSetRequest:
+      $ref: ../schemas/selection/candidate_sets/candidate_set_request.schema.json
+    CandidateSet:
+      $ref: ../schemas/core/candidate_set.schema.json

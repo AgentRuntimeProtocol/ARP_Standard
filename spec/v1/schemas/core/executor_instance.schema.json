@@ -1,0 +1,18 @@
+{
+  "title": "ExecutorInstance",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["executor_instance_id", "executor_type_id", "endpoint"],
+  "properties": {
+    "executor_instance_id": { "type": "string" },
+    "executor_type_id": { "type": "string" },
+    "endpoint": { "$ref": "../common/endpoint_locator.schema.json" },
+    "environment": { "type": "string" },
+    "region": { "type": "string" },
+    "status": { "$ref": "../common/status.schema.json" },
+    "auth": { "type": "object", "additionalProperties": true },
+    "metadata": { "$ref": "../common/metadata.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

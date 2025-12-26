@@ -150,6 +150,13 @@ def _build_router(service: str, operations: list[dict[str, Any]], output_dir: Pa
         if any(p["in"] == "path" for p in op["params"]):
             uses_path = True
         param_types = [p["type"] for p in op["params"]]
+        for param_type in param_types:
+            if not isinstance(param_type, str):
+                continue
+            if param_type in _PRIMITIVE_TYPES:
+                continue
+            if _IDENT_RE.match(param_type):
+                import_models.add(param_type)
         needs_any = needs_any or _needs_any(op["return_type"], op.get("body_type", ""), *param_types)
 
     lines: list[str] = []
@@ -481,9 +488,13 @@ def main() -> int:
     openapi_root = spec_root / "openapi"
 
     services = {
-        "runtime": openapi_root / "runtime.openapi.yaml",
-        "tool_registry": openapi_root / "tool-registry.openapi.yaml",
-        "daemon": openapi_root / "daemon.openapi.yaml",
+        "run_gateway": openapi_root / "run-gateway.openapi.yaml",
+        "run_coordinator": openapi_root / "run-coordinator.openapi.yaml",
+        "atomic_executor": openapi_root / "atomic-executor.openapi.yaml",
+        "composite_executor": openapi_root / "composite-executor.openapi.yaml",
+        "node_registry": openapi_root / "node-registry.openapi.yaml",
+        "selection": openapi_root / "selection.openapi.yaml",
+        "pdp": openapi_root / "pdp.openapi.yaml",
     }
     for name, path in services.items():
         if not path.exists():
@@ -491,6 +502,17 @@ def main() -> int:
 
     output_root = repo_root / "kits" / "python" / "src" / "arp_standard_server"
     output_root.mkdir(parents=True, exist_ok=True)
+
+    # Clean any stale service directories that are not part of the current spec.
+    allowed_dirs = set(services.keys()) | {"__pycache__"}
+    for child in output_root.iterdir():
+        if not child.is_dir():
+            continue
+        if child.name.startswith("."):
+            continue
+        if child.name in allowed_dirs:
+            continue
+        shutil.rmtree(child)
 
     for name, path in services.items():
         bundled = _load_bundle(path)

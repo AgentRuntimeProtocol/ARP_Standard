@@ -1,0 +1,15 @@
+{
+  "title": "SubtaskSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subtask_id", "goal"],
+  "properties": {
+    "subtask_id": { "type": "string" },
+    "goal": { "type": "string" },
+    "constraints": { "$ref": "constraint_envelope.schema.json" },
+    "expected_output_schema": { "type": "object", "additionalProperties": true },
+    "metadata": { "$ref": "../common/metadata.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

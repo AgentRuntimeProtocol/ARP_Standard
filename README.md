@@ -36,7 +36,7 @@ _**Agent Runtime Protocol**_ is an open standard for running agentic workflows i
 ARP is:
 - **Language-agnostic**: the standard is defined as contracts, not as a single official client or server library.
 - **Cloud/model-agnostic**: designed to support multiple deployment environments and model providers. Components can live close or far from each other.
-- **Modular**: every component can be swapped out (runtimes, tool registries, orchestrators, control planes).
+- **Modular**: every component can be swapped out (gateways, coordinators, executors, registries, policy, control planes).
 - **Standard-first**: contracts are the product wedge; implementations exist to validate and accelerate adoption.
 - **Interoperable**: alternative protocols like *MCP* and *A2A* can interact with or be incorporated in the ARP ecosystem with simple, often first-party wrappers.
 
@@ -58,7 +58,7 @@ If you want the exact contracts:
 - Optionally, the docs: [`docs/README.md`](docs/README.md)
 
 If you want something runnable:
-- Use [JARVIS](https://github.com/AgentRuntimeProtocol/JARVIS_Release), the first‑party reference stack with *Runtime* + *Tool Registry* + *Daemon*.
+- Use [JARVIS](https://github.com/AgentRuntimeProtocol/JARVIS_Release), the first‑party reference stack implementing the ARP Standard service set.
 - JARVIS exists not only as a product, but also as an validation of the standard and to provide a working reference implementation.
 
 ## Why ARP
@@ -69,23 +69,25 @@ Most agent systems today carry one or more of the following risks:
 - Integration-heavy: every agent and tool combination needs custom wiring.
 
 ARP’s goal is to make agent ecosystems composable:
-- A runtime implements the ARP Runtime API.
-- A tool provider exposes tools via the ARP Tool Registry API.
-- A daemon orchestrates and manages runtime instances and routes runs across them.
+- A Run Gateway exposes client-facing run APIs.
+- A Run Coordinator owns run lifecycle, enforcement, and audit history.
+- Atomic and Composite Executors execute NodeRuns.
+- A Node Registry publishes NodeTypes; a Selection service generates bounded candidate sets.
 - Any compliant client can talk to any compliant component.
 
 Unlike monolithic agent systems, you can adopt ARP incrementally:
-1) Wrap an existing agent as an ARP Runtime.
-2) Expose your tools as an ARP Tool Registry (or as a tool module that any tool registry can consume).
-3) Add a Daemon for orchestration and fleet management.
-4) Add a Control Plane when you need policy, tenancy, and operations (managing daemons and tool registries).
+1) Register Atomic NodeTypes for existing services/tools.
+2) Deploy Atomic Executors for execution (in-proc or on-wire).
+3) Add a Run Coordinator + Run Gateway for durable runs and enforcement.
+4) Add Node Registry + Selection as shared services (optional for dev).
+5) Add policy (PDP), approvals, and observability as needed.
 
 ## Interoperability with other standards
 
 ARP is designed to interoperate, not compete in a silo.
 
 Examples:
-- Tool ecosystems: use adapters to MCP (tool servers) behind an ARP Tool Registry.
+- Tool ecosystems: import MCP tools as Atomic NodeTypes via an MCP adapter (executed by an Atomic Executor).
 - Agent-to-agent: bridge to A2A-style communication where needed.
 - Agent-as-a-service: provide facades compatible with Agent Protocol style APIs.
 
@@ -100,11 +102,11 @@ Standard design goals:
 - Conformance testing in client/server packages: generated client and server packages are validated against the schemas to provide reliable artifacts that adhere to the standard.
 
 In addition, ARP ships an official endpoint-level conformance checker:
-- `arp-conformance` validates running Runtime / Tool Registry / Daemon services against the ARP Standard schemas.
+- `arp-conformance` validates running v1 services (Run Gateway, Run Coordinator, Executors, Node Registry, Selection) against the ARP Standard schemas.
 
 ## Clients and server bases
 
-Client packages are client-focused libraries for talking to ARP components (Runtime, Tool Registry, Daemon). Use them to easily communicate with any ARP-compliant component.
+The published Python SDKs target the v1 node-centric service set (Run Gateway / Run Coordinator / Executors / Node Registry / Selection).
 Some languages also ship a companion models package and a server base package (builder kit) to implement components with the same contracts.
 
 They’re also useful for integration/conformance testing: write tests that call your service via the client and validate behavior against the contracts.
@@ -140,45 +142,72 @@ python3 -m pip install arp-standard-server
 
 ```bash
 python3 -m pip install arp-conformance
-arp-conformance check runtime --url http://127.0.0.1:8081 --tier smoke
+arp-conformance check run-gateway --url http://127.0.0.1:8080 --tier smoke
 ```
 
 ### Quick example
 
 ```python
-from arp_standard_client.daemon import DaemonClient
-from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
+from arp_standard_client.run_gateway import RunGatewayClient
+from arp_standard_model import NodeTypeRef, RunGatewayStartRunRequest, RunStartRequest
 
-client = DaemonClient(base_url="http://127.0.0.1:8082", bearer_token="your-jwt")
-created = client.create_instances(
-    DaemonCreateInstancesRequest(
-        body=InstanceCreateRequestBody(runtime_profile="default", count=1)
+client = RunGatewayClient(base_url="http://127.0.0.1:8080", bearer_token="your-jwt")
+run = client.start_run(
+    RunGatewayStartRunRequest(
+        body=RunStartRequest(
+            root_node_type_ref=NodeTypeRef(node_type_id="example.com/node-types/my-root", version="1.0.0"),
+            input={"goal": "Hello, ARP"},
+        )
     )
 )
-print(created.model_dump(exclude_none=True))
+print(run.model_dump(exclude_none=True))
 ```
 
 ### Server example (FastAPI)
 
 ```python
-from arp_standard_server.daemon import BaseDaemonServer
-from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
+from arp_standard_server import AuthSettings
+from arp_standard_server.run_gateway import BaseRunGatewayServer
+from arp_standard_model import (
+    Health,
+    Run,
+    RunGatewayCancelRunRequest,
+    RunGatewayGetRunRequest,
+    RunGatewayHealthRequest,
+    RunGatewayStartRunRequest,
+    RunGatewayStreamRunEventsRequest,
+    RunGatewayVersionRequest,
+    VersionInfo,
+)
 
-class MyDaemon(BaseDaemonServer):
-    async def create_instances(self, request: DaemonCreateInstancesRequest):
+class MyRunGateway(BaseRunGatewayServer):
+    async def cancel_run(self, request: RunGatewayCancelRunRequest) -> Run:
+        return ...
+
+    async def get_run(self, request: RunGatewayGetRunRequest) -> Run:
+        return ...
+
+    async def health(self, request: RunGatewayHealthRequest) -> Health:
+        return ...
+
+    async def start_run(self, request: RunGatewayStartRunRequest) -> Run:
         body = request.body
         return ...
 
-from arp_standard_server import AuthSettings
+    async def stream_run_events(self, request: RunGatewayStreamRunEventsRequest) -> str:
+        return ""
 
-app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
+    async def version(self, request: RunGatewayVersionRequest) -> VersionInfo:
+        return ...
+
+app = MyRunGateway().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
 ### Authentication (JWT Bearer)
 
 ```python
-client = DaemonClient(
-    base_url="http://127.0.0.1:8082",
+client = RunGatewayClient(
+    base_url="http://127.0.0.1:8080",
     bearer_token="your-jwt",
 )
 ```
@@ -188,12 +217,12 @@ client = DaemonClient(
 Streaming endpoints currently return NDJSON as plain text. Helpers are planned but not implemented yet.
 
 ```python
-from arp_standard_client.runtime import RuntimeClient
-from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
+from arp_standard_client.run_gateway import RunGatewayClient
+from arp_standard_model import RunGatewayStreamRunEventsParams, RunGatewayStreamRunEventsRequest
 
-runtime = RuntimeClient(base_url="http://127.0.0.1:8081", bearer_token="your-jwt")
-text = runtime.get_run_events(
-    RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
+gateway = RunGatewayClient(base_url="http://127.0.0.1:8080", bearer_token="your-jwt")
+text = gateway.stream_run_events(
+    RunGatewayStreamRunEventsRequest(params=RunGatewayStreamRunEventsParams(run_id=run_id))
 )
 for line in text.splitlines():
     if not line:
@@ -203,7 +232,9 @@ for line in text.splitlines():
 
 ### Code generation
 
-The spec in [`spec/v1/`](spec/v1/README.md) is the source of truth for the ARP Standard. Code generation pipelines read the contracts (OpenAPI + JSON Schemas) and generate language-specific client packages (and models where applicable) automatically at release time.
+The spec in [`spec/v1/`](spec/v1/README.md) is the source of truth for the ARP Standard.
+
+Code generation pipelines read the contracts (OpenAPI + JSON Schemas) and generate language-specific client packages (and models where applicable) automatically at release time.
 
 The generated artifacts are validated against the spec schemas and published to their corresponding package providers (for example, `PyPI` for Python).
 
@@ -215,7 +246,7 @@ For client/server codegen developers, see [`tools/codegen/python/README.md`](too
 ## Versioning
 
 ARP uses versioned API namespaces (Kubernetes-style):
-- `v1` (stable)
+- `v1` (current; `/v1/...`)
 
 All endpoints in the v1 spec are versioned under the `/v1` path prefix (e.g. `GET /v1/health`).
 
@@ -223,6 +254,7 @@ All endpoints in the v1 spec are versioned under the `/v1` path prefix (e.g. `GE
 
 - Docs index: [`docs/README.md`](docs/README.md)
 - Spec overview: [`docs/spec.md`](docs/spec.md)
+- Security profiles (auth configuration): [`docs/security-profiles.md`](docs/security-profiles.md)
 - Services overview: [`docs/services.md`](docs/services.md)
 - Conformance: [`docs/conformance.md`](docs/conformance.md)
 - Python client + models: [`docs/python-client.md`](docs/python-client.md)

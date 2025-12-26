@@ -13,36 +13,67 @@ python3 -m pip install arp-standard-server
 ## Basic usage
 
 ```python
-from arp_standard_server.daemon import BaseDaemonServer
+from arp_standard_server.run_gateway import BaseRunGatewayServer
 from arp_standard_server import AuthSettings
-from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
+from arp_standard_model import (
+    Health,
+    Run,
+    RunGatewayCancelRunRequest,
+    RunGatewayGetRunRequest,
+    RunGatewayHealthRequest,
+    RunGatewayStartRunRequest,
+    RunGatewayStreamRunEventsRequest,
+    RunGatewayVersionRequest,
+    VersionInfo,
+)
 
-class MyDaemon(BaseDaemonServer):
-    async def create_instances(self, request: DaemonCreateInstancesRequest):
+class MyRunGateway(BaseRunGatewayServer):
+    async def cancel_run(self, request: RunGatewayCancelRunRequest) -> Run:
+        return ...
+
+    async def get_run(self, request: RunGatewayGetRunRequest) -> Run:
+        return ...
+
+    async def health(self, request: RunGatewayHealthRequest) -> Health:
+        return ...
+
+    async def start_run(self, request: RunGatewayStartRunRequest) -> Run:
         body = request.body
         # business logic here
         return ...
 
-app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
+    async def stream_run_events(self, request: RunGatewayStreamRunEventsRequest) -> str:
+        return ""
+
+    async def version(self, request: RunGatewayVersionRequest) -> VersionInfo:
+        return ...
+
+app = MyRunGateway().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
 ## Service base classes
 
-- `BaseRuntimeServer`
-- `BaseToolRegistryServer`
-- `BaseDaemonServer`
+- `BaseRunGatewayServer`
+- `BaseRunCoordinatorServer`
+- `BaseAtomicExecutorServer`
+- `BaseCompositeExecutorServer`
+- `BaseNodeRegistryServer`
+- `BaseSelectionServer`
+- `BasePdpServer`
 
 ## Authentication (JWT Bearer)
 
 ```python
-app = MyDaemon().create_app(
+app = MyRunGateway().create_app(
     auth_settings=AuthSettings(
         mode="required",
         issuer="https://issuer.example.com/realms/arp",
-        audience="arp-daemon",
+        audience="arp-run-gateway",
     )
 )
 ```
+
+See also: [`docs/security-profiles.md`](security-profiles.md) for the standard auth configuration profiles (`Dev-Insecure`, `Dev-Secure-Keycloak`, `Enterprise`).
 
 ## Request objects
 
@@ -75,10 +106,11 @@ Run these from the repository root.
 ```bash
 python3 -m pip install -r tools/codegen/python/model/requirements.txt
 python3 -m pip install -r tools/codegen/python/server/requirements.txt
-python3 tools/codegen/python/model/generate.py
-python3 tools/codegen/python/server/generate.py
+
+python3 tools/codegen/python/model/generate.py --version v1
+python3 tools/codegen/python/server/generate.py --version v1
 ```
 
 ## Spec reference
 
-`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.6`) used to generate the package.
+`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.0`) used to generate the package.

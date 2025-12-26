@@ -1,0 +1,13 @@
+{
+  "title": "ExecutorType",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["executor_type_id", "kind"],
+  "properties": {
+    "executor_type_id": { "type": "string" },
+    "kind": { "$ref": "node_kind.schema.json" },
+    "description": { "type": "string" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

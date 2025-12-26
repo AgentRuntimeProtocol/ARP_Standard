@@ -1,0 +1,6 @@
+{
+  "title": "EvaluationStatus",
+  "type": "string",
+  "enum": ["success", "fail", "unknown"]
+}
+

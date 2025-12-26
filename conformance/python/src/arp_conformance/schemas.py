@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from jsonschema import Draft202012Validator, RefResolver
+from jsonschema import Draft202012Validator
+from referencing import Registry, Resource
+from referencing import jsonschema as referencing_jsonschema
 
 from arp_conformance.spec_loader import iter_spec_schema_files
 
@@ -18,6 +20,7 @@ def _to_uri(spec_version: str, rel_path: str) -> str:
 class SchemaRegistry:
     spec_version: str
     store: dict[str, dict[str, Any]]
+    registry: Registry
 
     @classmethod
     def load(cls, *, spec_path: Path | None = None, version: str = "v1") -> "SchemaRegistry":
@@ -27,8 +30,14 @@ class SchemaRegistry:
             version=version,
         ):
             uri = _to_uri(version, rel_path)
-            store[uri] = json.loads(content)
-        return cls(spec_version=version, store=store)
+            schema = json.loads(content)
+            schema.setdefault("$id", uri)
+            store[uri] = schema
+        registry = Registry().with_resources(
+            (uri, Resource.from_contents(schema, default_specification=referencing_jsonschema.DRAFT202012))
+            for uri, schema in store.items()
+        )
+        return cls(spec_version=version, store=store, registry=registry)
 
     def schema_uri(self, rel_path: str) -> str:
         if not rel_path.startswith("schemas/"):
@@ -44,8 +53,7 @@ class SchemaRegistry:
 
     def validate(self, instance: Any, *, schema_path: str) -> list[str]:
         schema = self.load_schema(schema_path)
-        resolver = RefResolver(base_uri=self.schema_uri(schema_path), referrer=schema, store=self.store)
-        validator = Draft202012Validator(schema, resolver=resolver)
+        validator = Draft202012Validator(schema, registry=self.registry)
         errors = sorted(validator.iter_errors(instance), key=lambda e: list(getattr(e, "absolute_path", [])))
 
         def _json_path(err: object) -> str:

@@ -752,6 +752,18 @@ def _remove_service_models(client_src_root: Path, services: Sequence[str]) -> No
             shutil.rmtree(models_dir)
 
 
+def _patch_shared_models_init(client_src_root: Path) -> None:
+    init_path = client_src_root / "models" / "__init__.py"
+    if not init_path.exists():
+        return
+    text = init_path.read_text(encoding="utf-8")
+    ignore = "  # pyright: ignore[reportUnsupportedDunderAll]"
+    target = "__all__ = list(_model_all)"
+    if ignore in text or target not in text:
+        return
+    init_path.write_text(text.replace(target, f"{target}{ignore}"), encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--version", default="v1", help="Spec version directory (default: v1)")
@@ -765,19 +777,46 @@ def main() -> int:
     client_src_root = repo_root / "clients" / "python" / "src" / "arp_standard_client"
 
     services: dict[str, tuple[Path, Path]] = {
-        "tool_registry": (
-            openapi_root / "tool-registry.openapi.yaml",
-            client_src_root / "tool_registry",
+        "run_gateway": (
+            openapi_root / "run-gateway.openapi.yaml",
+            client_src_root / "run_gateway",
         ),
-        "runtime": (
-            openapi_root / "runtime.openapi.yaml",
-            client_src_root / "runtime",
+        "run_coordinator": (
+            openapi_root / "run-coordinator.openapi.yaml",
+            client_src_root / "run_coordinator",
         ),
-        "daemon": (
-            openapi_root / "daemon.openapi.yaml",
-            client_src_root / "daemon",
+        "atomic_executor": (
+            openapi_root / "atomic-executor.openapi.yaml",
+            client_src_root / "atomic_executor",
+        ),
+        "composite_executor": (
+            openapi_root / "composite-executor.openapi.yaml",
+            client_src_root / "composite_executor",
+        ),
+        "node_registry": (
+            openapi_root / "node-registry.openapi.yaml",
+            client_src_root / "node_registry",
+        ),
+        "selection": (
+            openapi_root / "selection.openapi.yaml",
+            client_src_root / "selection",
+        ),
+        "pdp": (
+            openapi_root / "pdp.openapi.yaml",
+            client_src_root / "pdp",
         ),
     }
+
+    # Clean any stale service directories that are not part of the current spec.
+    allowed_dirs = set(services.keys()) | {"clients", "models", "__pycache__"}
+    for child in client_src_root.iterdir():
+        if not child.is_dir():
+            continue
+        if child.name.startswith("."):
+            continue
+        if child.name in allowed_dirs:
+            continue
+        shutil.rmtree(child)
 
     for name, (openapi_path, output_dir) in services.items():
         if not openapi_path.exists():
@@ -788,6 +827,7 @@ def main() -> int:
     patcher = Path(__file__).resolve().parent / "patch_client_to_pydantic.py"
     subprocess.run([sys.executable, str(patcher), "--root", str(client_src_root)], check=True)
     _remove_service_models(client_src_root, list(services.keys()))
+    _patch_shared_models_init(client_src_root)
 
     return 0
 

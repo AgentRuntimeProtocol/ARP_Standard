@@ -6,7 +6,7 @@ Conformance is defined by:
 - Required endpoints listed in [`spec/v1/conformance/rules/required.md`](../spec/v1/conformance/rules/required.md)
 
 In addition, ARP ships an official endpoint-level conformance checker:
-- [`arp-conformance`](../conformance/python/README.md): validates **running** Runtime / Tool Registry / Daemon services against the ARP Standard schemas.
+- [`arp-conformance`](../conformance/python/README.md): validates **running** services against the ARP Standard schemas.
 
 ## Validate locally
 
@@ -42,12 +42,12 @@ python3 -m pip install arp-conformance
 Examples:
 
 ```bash
-arp-conformance check runtime --url http://localhost:8081 --tier smoke
-arp-conformance check tool-registry --url http://localhost:8082 --tier surface
-arp-conformance check daemon --url http://localhost:8083 --tier core --allow-mutations
+arp-conformance check run-gateway --url http://localhost:8080 --tier smoke
+arp-conformance check node-registry --url http://localhost:8081 --tier surface
+arp-conformance check run-coordinator --url http://localhost:8082 --tier surface
 ```
 
-Tier definitions (including what “minimal success-path” means) live in the `arp-conformance` README:
+Tier definitions and current limitations (core/deep are placeholders for node-centric v1) live in the `arp-conformance` README:
 - [`conformance/python/README.md`](../conformance/python/README.md)
 
 ## See also

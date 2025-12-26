@@ -112,28 +112,49 @@ def main(argv: list[str] | None = None) -> int:
         p.add_argument("--format", default="text", choices=["text", "json", "junit"])
         p.add_argument("--out", type=str, help="Write report to file instead of stdout")
         p.add_argument("--spec", default="v1", choices=["v1"])
-        p.add_argument("--spec-path", type=str, help="Use local spec directory (containing v1/)")
+        p.add_argument(
+            "--spec-path",
+            type=str,
+            help="Use local spec directory (containing v1/ or a repo root containing spec/...)",
+        )
 
-    runtime = check_sub.add_parser("runtime", help="Check an ARP Runtime service")
-    add_common_flags(runtime)
-    runtime.add_argument("--url", required=True)
+    run_gateway = check_sub.add_parser("run-gateway", help="Check an ARP Run Gateway service")
+    add_common_flags(run_gateway)
+    run_gateway.add_argument("--url", required=True)
 
-    tool_registry = check_sub.add_parser("tool-registry", help="Check an ARP Tool Registry service")
-    add_common_flags(tool_registry)
-    tool_registry.add_argument("--url", required=True)
-    tool_registry.add_argument("--tool-id", type=str)
-    tool_registry.add_argument("--tool-name", type=str)
+    run_coordinator = check_sub.add_parser("run-coordinator", help="Check an ARP Run Coordinator service")
+    add_common_flags(run_coordinator)
+    run_coordinator.add_argument("--url", required=True)
 
-    daemon = check_sub.add_parser("daemon", help="Check an ARP Daemon service")
-    add_common_flags(daemon)
-    daemon.add_argument("--url", required=True)
-    daemon.add_argument("--runtime-profile", type=str)
+    atomic_executor = check_sub.add_parser("atomic-executor", help="Check an ARP Atomic Executor service")
+    add_common_flags(atomic_executor)
+    atomic_executor.add_argument("--url", required=True)
+
+    composite_executor = check_sub.add_parser("composite-executor", help="Check an ARP Composite Executor service")
+    add_common_flags(composite_executor)
+    composite_executor.add_argument("--url", required=True)
+
+    node_registry = check_sub.add_parser("node-registry", help="Check an ARP Node Registry service")
+    add_common_flags(node_registry)
+    node_registry.add_argument("--url", required=True)
+
+    selection = check_sub.add_parser("selection", help="Check an ARP Selection service")
+    add_common_flags(selection)
+    selection.add_argument("--url", required=True)
+
+    pdp = check_sub.add_parser("pdp", help="Check an ARP PDP service")
+    add_common_flags(pdp)
+    pdp.add_argument("--url", required=True)
 
     all_services = check_sub.add_parser("all", help="Check multiple ARP services")
     add_common_flags(all_services)
-    all_services.add_argument("--runtime-url", type=str)
-    all_services.add_argument("--tool-registry-url", type=str)
-    all_services.add_argument("--daemon-url", type=str)
+    all_services.add_argument("--run-gateway-url", type=str)
+    all_services.add_argument("--run-coordinator-url", type=str)
+    all_services.add_argument("--atomic-executor-url", type=str)
+    all_services.add_argument("--composite-executor-url", type=str)
+    all_services.add_argument("--node-registry-url", type=str)
+    all_services.add_argument("--selection-url", type=str)
+    all_services.add_argument("--pdp-url", type=str)
 
     args = parser.parse_args(argv)
 
@@ -157,22 +178,23 @@ def main(argv: list[str] | None = None) -> int:
         strict=args.strict,
         spec_path=args.spec_path,
         spec_version=args.spec,
-        tool_id=getattr(args, "tool_id", None),
-        tool_name=getattr(args, "tool_name", None),
-        runtime_profile=getattr(args, "runtime_profile", None),
     )
 
     if args.command == "check" and args.service == "all":
         reports = run_all(
             tier=args.tier,
-            runtime_url=args.runtime_url,
-            tool_registry_url=args.tool_registry_url,
-            daemon_url=args.daemon_url,
+            run_gateway_url=args.run_gateway_url,
+            run_coordinator_url=args.run_coordinator_url,
+            atomic_executor_url=args.atomic_executor_url,
+            composite_executor_url=args.composite_executor_url,
+            node_registry_url=args.node_registry_url,
+            selection_url=args.selection_url,
+            pdp_url=args.pdp_url,
             headers=headers,
             options=options,
         )
         if not reports:
-            raise SystemExit("No service URLs provided (use --runtime-url/--tool-registry-url/--daemon-url)")
+            raise SystemExit("No service URLs provided (use --run-gateway-url/--run-coordinator-url/...)")
         _write_multi_output(reports, fmt=args.format, out_path=args.out)
         return _exit_code(reports, strict=args.strict)
 

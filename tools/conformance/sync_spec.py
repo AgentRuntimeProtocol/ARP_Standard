@@ -6,6 +6,13 @@ import shutil
 from pathlib import Path
 
 
+def _resolve_spec_root(repo_root: Path, version: str) -> Path:
+    direct = repo_root / "spec" / version
+    if direct.exists():
+        return direct
+    raise FileNotFoundError(f"Missing spec directory: {direct}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Sync spec/<version>/ into the arp-conformance embedded snapshot.")
     parser.add_argument("--version", default="v1", help="Spec version directory name (default: v1)")
@@ -13,9 +20,7 @@ def main() -> int:
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[2]
-    spec_root = repo_root / "spec" / args.version
-    if not spec_root.exists():
-        raise SystemExit(f"Missing spec directory: {spec_root}")
+    spec_root = _resolve_spec_root(repo_root, args.version)
 
     dest_root = repo_root / "conformance" / "python" / "src" / "arp_conformance" / "_spec" / args.version
     if args.clean and dest_root.exists():
@@ -32,4 +37,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

@@ -1,0 +1,16 @@
+{
+  "title": "RunEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "seq", "type", "time"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "node_run_id": { "type": "string" },
+    "seq": { "type": "integer", "minimum": 0 },
+    "type": { "$ref": "run_event_type.schema.json" },
+    "time": { "type": "string", "format": "date-time" },
+    "data": { "type": "object", "additionalProperties": true },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

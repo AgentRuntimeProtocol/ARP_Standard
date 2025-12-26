@@ -1,0 +1,12 @@
+{
+  "node_runs": [
+    {
+      "inputs": {},
+      "node_type_ref": {
+        "node_type_id": "example",
+        "version": "example"
+      }
+    }
+  ],
+  "parent_node_run_id": "example"
+}

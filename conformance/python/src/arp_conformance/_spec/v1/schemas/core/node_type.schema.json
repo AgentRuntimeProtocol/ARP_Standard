@@ -1,0 +1,23 @@
+{
+  "title": "NodeType",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_type_id", "version", "kind"],
+  "properties": {
+    "node_type_id": { "type": "string" },
+    "version": { "type": "string" },
+    "kind": { "$ref": "node_kind.schema.json" },
+    "description": { "type": "string" },
+    "input_schema": { "type": "object", "additionalProperties": true },
+    "output_schema": { "type": "object", "additionalProperties": true },
+    "constraints": { "$ref": "constraint_envelope.schema.json" },
+    "evaluation": { "type": "object", "additionalProperties": true },
+    "preferred_executor_types": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "metadata": { "$ref": "../common/metadata.schema.json" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

@@ -1,0 +1,13 @@
+{
+  "title": "NodeRunsCreateResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_runs"],
+  "properties": {
+    "node_runs": {
+      "type": "array",
+      "items": { "$ref": "../../core/node_run.schema.json" }
+    },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

@@ -11,22 +11,17 @@ python3 -m pip install arp-standard-model
 ## Usage
 
 ```python
-from arp_standard_model import (
-    RunRequestBody,
-    RunStatus,
-    RuntimeGetRunStatusParams,
-    RuntimeGetRunStatusRequest,
-)
+from arp_standard_model import RunGatewayGetRunParams, RunGatewayGetRunRequest
 
-req = RuntimeGetRunStatusRequest(params=RuntimeGetRunStatusParams(run_id="run_123"))
+req = RunGatewayGetRunRequest(params=RunGatewayGetRunParams(run_id="run_123"))
 ```
 
 ## Request model conventions
 
-- `*RequestBody` aliases point to JSON body models (e.g., `RunRequestBody`).
+- `*RequestBody` aliases point to JSON body models (e.g., `RunStartRequestBody`).
 - `*Params` models represent path/query parameters.
 - `*Request` models wrap `params` and/or `body` and are used by the client facade.
-- Request and params models are service-prefixed to avoid collisions (e.g., `RuntimeGetRunStatusRequest`).
+- Request and params models are service-prefixed to avoid collisions (e.g., `RunGatewayGetRunRequest`, `NodeRegistryListNodeTypesRequest`).
 
 ## Wire format
 
@@ -34,7 +29,7 @@ Models use the exact JSON field names from the spec (no aliasing). When serializ
 
 ## Spec reference
 
-`arp_standard_model.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.6`) used to generate the package.
+`arp_standard_model.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.0`) used to generate the package.
 
 ## See also
 

@@ -6,6 +6,7 @@ Short, practical docs for working with the ARP Standard and its Python client, m
 
 - Spec (normative): [`spec/v1/`](../spec/v1/README.md)
 - Spec layout + conventions: [`docs/spec.md`](spec.md)
+- Security profiles (auth configuration): [`docs/security-profiles.md`](security-profiles.md)
 - Service overview (what talks to what): [`docs/services.md`](services.md)
 - Conformance vectors + validation: [`docs/conformance.md`](conformance.md)
 - Endpoint conformance checker (`arp-conformance`): [`conformance/python/`](../conformance/python/README.md)

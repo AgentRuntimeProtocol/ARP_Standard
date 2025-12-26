@@ -1,0 +1,12 @@
+{
+  "title": "CandidateSetRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["subtask_spec"],
+  "properties": {
+    "subtask_spec": { "$ref": "../../core/subtask_spec.schema.json" },
+    "run_context": { "$ref": "../../core/run_context.schema.json" },
+    "constraints": { "$ref": "../../core/constraint_envelope.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

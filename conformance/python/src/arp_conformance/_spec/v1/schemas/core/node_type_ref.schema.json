@@ -1,0 +1,18 @@
+{
+  "title": "NodeTypeRef",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_type_id", "version"],
+  "properties": {
+    "node_type_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "extensions": {
+      "$ref": "../common/extensions.schema.json"
+    }
+  }
+}
+

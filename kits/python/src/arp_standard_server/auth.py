@@ -20,9 +20,27 @@ from arp_standard_model import Error as ErrorDetail
 from arp_standard_model import ErrorEnvelope
 
 AuthMode = Literal["required", "optional", "disabled"]
+AuthProfile = Literal["dev-insecure", "dev-secure-keycloak", "enterprise"]
 Principal = dict[str, Any]
 
 principal_var: ContextVar[Principal | None] = ContextVar("arp_principal", default=None)
+
+DEFAULT_DEV_KEYCLOAK_ISSUER = "http://localhost:8080/realms/arp-dev"
+
+
+def _normalize_profile(profile: str) -> str:
+    return profile.strip().lower().replace("_", "-")
+
+
+def _resolve_profile_defaults(profile_raw: str) -> dict[str, Any]:
+    profile = _normalize_profile(profile_raw)
+    if profile in {"dev-insecure", "dev"}:
+        return {"profile": "dev-insecure", "mode": "disabled"}
+    if profile in {"dev-secure-keycloak", "dev-secure", "keycloak"}:
+        return {"profile": "dev-secure-keycloak", "mode": "required", "issuer": DEFAULT_DEV_KEYCLOAK_ISSUER}
+    if profile in {"enterprise", "prod", "production"}:
+        return {"profile": "enterprise", "mode": "required"}
+    raise ValueError(f"Invalid ARP_AUTH_PROFILE: {profile_raw!r}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -41,7 +59,12 @@ class AuthSettings:
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None) -> "AuthSettings":
         env: Mapping[str, str] = os.environ if environ is None else environ
-        mode = (env.get("ARP_AUTH_MODE") or "required").strip().lower()
+        profile_defaults: dict[str, Any] = {}
+        profile_raw = (env.get("ARP_AUTH_PROFILE") or "").strip()
+        if profile_raw:
+            profile_defaults = _resolve_profile_defaults(profile_raw)
+
+        mode = (env.get("ARP_AUTH_MODE") or profile_defaults.get("mode") or "required").strip().lower()
         if mode not in {"required", "optional", "disabled"}:
             raise ValueError(f"Invalid ARP_AUTH_MODE: {mode!r}")
 
@@ -61,10 +84,23 @@ class AuthSettings:
         if not exempt_paths:
             exempt_paths = ("/v1/health", "/v1/version")
 
+        issuer = (env.get("ARP_AUTH_ISSUER") or "").strip() or None
+        if issuer is None:
+            issuer = profile_defaults.get("issuer")
+
+        audience = (env.get("ARP_AUTH_AUDIENCE") or "").strip() or None
+        if audience is None:
+            audience = (env.get("ARP_AUTH_SERVICE_ID") or "").strip() or None
+
+        if profile_defaults.get("profile") == "dev-secure-keycloak" and mode != "disabled" and not audience:
+            raise ValueError(
+                "Dev-Secure-Keycloak profile requires ARP_AUTH_AUDIENCE or ARP_AUTH_SERVICE_ID"
+            )
+
         return cls(
             mode=mode,  # type: ignore[arg-type]
-            issuer=(env.get("ARP_AUTH_ISSUER") or None),
-            audience=(env.get("ARP_AUTH_AUDIENCE") or None),
+            issuer=issuer,
+            audience=audience,
             jwks_uri=(env.get("ARP_AUTH_JWKS_URI") or None),
             oidc_discovery_url=(env.get("ARP_AUTH_OIDC_DISCOVERY_URL") or None),
             algorithms=algorithms,

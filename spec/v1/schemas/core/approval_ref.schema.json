@@ -1,0 +1,12 @@
+{
+  "title": "ApprovalRef",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["approval_id"],
+  "properties": {
+    "approval_id": { "type": "string" },
+    "uri": { "type": "string", "format": "uri" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

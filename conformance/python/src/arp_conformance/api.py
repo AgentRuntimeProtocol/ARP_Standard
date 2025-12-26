@@ -25,9 +25,13 @@ def run(
 def run_all(
     *,
     tier: str,
-    runtime_url: str | None = None,
-    tool_registry_url: str | None = None,
-    daemon_url: str | None = None,
+    run_gateway_url: str | None = None,
+    run_coordinator_url: str | None = None,
+    atomic_executor_url: str | None = None,
+    composite_executor_url: str | None = None,
+    node_registry_url: str | None = None,
+    selection_url: str | None = None,
+    pdp_url: str | None = None,
     headers: dict[str, str] | None = None,
     options: RunnerOptions | None = None,
 ) -> list[ConformanceReport]:
@@ -39,12 +43,15 @@ def run_all(
 
     reports: list[ConformanceReport] = []
     for service, url in [
-        ("runtime", runtime_url),
-        ("tool-registry", tool_registry_url),
-        ("daemon", daemon_url),
+        ("run-gateway", run_gateway_url),
+        ("run-coordinator", run_coordinator_url),
+        ("atomic-executor", atomic_executor_url),
+        ("composite-executor", composite_executor_url),
+        ("node-registry", node_registry_url),
+        ("selection", selection_url),
+        ("pdp", pdp_url),
     ]:
         if url is None:
             continue
         reports.append(run(service=service, base_url=url, tier=tier, headers=headers, options=options))
     return reports
-

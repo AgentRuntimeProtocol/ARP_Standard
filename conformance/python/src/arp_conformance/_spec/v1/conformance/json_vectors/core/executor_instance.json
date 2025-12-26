@@ -1,0 +1,5 @@
+{
+  "endpoint": "http://127.0.0.1:8080",
+  "executor_instance_id": "example",
+  "executor_type_id": "example"
+}

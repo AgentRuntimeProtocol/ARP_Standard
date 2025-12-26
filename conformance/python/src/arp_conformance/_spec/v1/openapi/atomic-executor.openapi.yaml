@@ -1,0 +1,107 @@
+openapi: 3.0.3
+info:
+  title: ARP Atomic Executor API
+  version: v1
+security:
+  - ArpBearerJWT: []
+paths:
+  /v1/health:
+    get:
+      summary: Health
+      operationId: health
+      tags: [health]
+      security: []
+      responses:
+        "200":
+          description: Health response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/version:
+    get:
+      summary: Version
+      operationId: version
+      tags: [version]
+      security: []
+      responses:
+        "200":
+          description: Version response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionInfo"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/atomic-node-runs:execute:
+    post:
+      summary: Execute atomic NodeRun
+      operationId: execute_atomic_node_run
+      tags: [atomic_node_runs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AtomicExecuteRequest"
+      responses:
+        "200":
+          description: Execution result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AtomicExecuteResult"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+components:
+  securitySchemes:
+    ArpBearerJWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Unauthorized
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+  schemas:
+    Health:
+      $ref: ../schemas/common/health.schema.json
+    VersionInfo:
+      $ref: ../schemas/common/version_info.schema.json
+    ErrorEnvelope:
+      $ref: ../schemas/common/error.schema.json
+    AtomicExecuteRequest:
+      $ref: ../schemas/atomic_executor/node_runs/atomic_execute_request.schema.json
+    AtomicExecuteResult:
+      $ref: ../schemas/atomic_executor/node_runs/atomic_execute_result.schema.json

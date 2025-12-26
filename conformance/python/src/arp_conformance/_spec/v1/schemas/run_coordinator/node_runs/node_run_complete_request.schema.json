@@ -1,0 +1,13 @@
+{
+  "title": "NodeRunCompleteRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "outputs": { "type": "object", "additionalProperties": true },
+    "output_artifacts": {
+      "type": "array",
+      "items": { "$ref": "../../common/resource_ref.schema.json" }
+    },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

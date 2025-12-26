@@ -4,30 +4,34 @@ All services MUST implement:
 - `GET /v1/health`
 - `GET /v1/version`
 
-Tool Registry MUST implement:
-- `GET /v1/tools`
-- `GET /v1/tools/{tool_id}`
-- `POST /v1/tool-invocations`
-
-Runtime MUST implement:
+Run Gateway MUST implement:
 - `POST /v1/runs`
 - `GET /v1/runs/{run_id}`
-- `GET /v1/runs/{run_id}/result`
+- `POST /v1/runs/{run_id}:cancel`
 
-Daemon MUST implement:
-- `GET /v1/instances`
-- `POST /v1/instances`
-- `DELETE /v1/instances/{instance_id}`
-- `POST /v1/instances:register`
-- `GET /v1/admin/runtime-profiles`
-- `PUT /v1/admin/runtime-profiles/{runtime_profile}`
-- `DELETE /v1/admin/runtime-profiles/{runtime_profile}`
-- `GET /v1/runs`
-- `POST /v1/runs`
-- `GET /v1/runs/{run_id}`
-- `GET /v1/runs/{run_id}/result`
+Optional (Run Gateway):
+- `GET /v1/runs/{run_id}/events`
 
-Optional (v1):
-- `POST /v1/runs/{run_id}:cancel` (runtime)
-- `GET /v1/runs/{run_id}/events` (runtime)
-- `GET /v1/runs/{run_id}/trace` (daemon)
+Run Coordinator MUST implement:
+- `POST /v1/node-runs`
+- `GET /v1/node-runs/{node_run_id}`
+- `POST /v1/graph-patches`
+- `POST /v1/node-runs/{node_run_id}:evaluation`
+- `POST /v1/node-runs/{node_run_id}:complete`
+
+Composite Executor MUST implement:
+- `POST /v1/composite-node-runs:begin`
+
+Atomic Executor MUST implement:
+- `POST /v1/atomic-node-runs:execute`
+
+Node Registry MUST implement:
+- `GET /v1/node-types`
+- `POST /v1/node-types`
+- `GET /v1/node-types/{node_type_id}`
+
+Selection MUST implement:
+- `POST /v1/candidate-sets`
+
+PDP MUST implement:
+- `POST /v1/policy:decide`

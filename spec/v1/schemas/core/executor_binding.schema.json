@@ -1,0 +1,13 @@
+{
+  "title": "ExecutorBinding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["executor_instance_id", "endpoint"],
+  "properties": {
+    "executor_instance_id": { "type": "string" },
+    "endpoint": { "$ref": "../common/endpoint_locator.schema.json" },
+    "audience": { "type": "string" },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

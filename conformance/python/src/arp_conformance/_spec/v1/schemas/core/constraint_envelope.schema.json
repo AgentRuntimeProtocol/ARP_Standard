@@ -1,0 +1,57 @@
+{
+  "title": "ConstraintEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "structural": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_depth": { "type": "integer", "minimum": 0 },
+        "max_children_per_composite": { "type": "integer", "minimum": 0 },
+        "max_total_nodes_per_run": { "type": "integer", "minimum": 0 },
+        "max_decomposition_rounds_per_node": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "candidates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_candidates_per_subtask": { "type": "integer", "minimum": 1 },
+        "allowed_node_type_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "denied_node_type_ids": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_wall_time_ms": { "type": "integer", "minimum": 0 },
+        "max_steps": { "type": "integer", "minimum": 0 },
+        "max_external_calls": { "type": "integer", "minimum": 0 },
+        "max_cost": { "type": "number", "minimum": 0 }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "side_effect_class": {
+          "title": "SideEffectClass",
+          "type": "string",
+          "enum": ["read", "write", "irreversible"]
+        },
+        "require_approval": { "type": "boolean" }
+      }
+    },
+    "extensions": {
+      "$ref": "../common/extensions.schema.json"
+    }
+  }
+}

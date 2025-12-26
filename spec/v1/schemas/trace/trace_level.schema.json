@@ -1,5 +1,0 @@
-{
-  "title": "Level",
-  "type": "string",
-  "enum": ["debug", "info", "warn", "error"]
-}

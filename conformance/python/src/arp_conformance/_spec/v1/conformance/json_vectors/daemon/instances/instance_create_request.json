@@ -1,7 +1,0 @@
-{
-  "runtime_profile": "default",
-  "count": 1,
-  "overrides": {
-    "tool_registry_url": "http://127.0.0.1:9000"
-  }
-}

@@ -1,0 +1,11 @@
+{
+  "title": "GraphPatchSubmitRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["graph_patch"],
+  "properties": {
+    "node_run_id": { "type": "string" },
+    "graph_patch": { "$ref": "../../core/graph_patch.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

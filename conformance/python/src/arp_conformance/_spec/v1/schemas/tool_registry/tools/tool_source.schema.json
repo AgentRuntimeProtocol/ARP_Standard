@@ -1,5 +1,0 @@
-{
-  "title": "Source",
-  "type": "string",
-  "enum": ["registry_local", "remote"]
-}

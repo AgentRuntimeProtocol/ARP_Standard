@@ -11,24 +11,53 @@ python3 -m pip install arp-standard-server
 ## Usage
 
 ```python
-from arp_standard_server.daemon import BaseDaemonServer
+from arp_standard_server.run_gateway import BaseRunGatewayServer
 from arp_standard_server import AuthSettings
-from arp_standard_model import DaemonCreateInstancesRequest, InstanceCreateRequestBody
+from arp_standard_model import (
+    Health,
+    Run,
+    RunGatewayCancelRunRequest,
+    RunGatewayGetRunRequest,
+    RunGatewayHealthRequest,
+    RunGatewayStartRunRequest,
+    RunGatewayStreamRunEventsRequest,
+    RunGatewayVersionRequest,
+    VersionInfo,
+)
 
-class MyDaemon(BaseDaemonServer):
-    async def create_instances(self, request: DaemonCreateInstancesRequest):
+class MyRunGateway(BaseRunGatewayServer):
+    async def cancel_run(self, request: RunGatewayCancelRunRequest) -> Run:
+        return ...
+
+    async def get_run(self, request: RunGatewayGetRunRequest) -> Run:
+        return ...
+
+    async def health(self, request: RunGatewayHealthRequest) -> Health:
+        return ...
+
+    async def start_run(self, request: RunGatewayStartRunRequest) -> Run:
         body = request.body
         # business logic here
         return ...
 
-app = MyDaemon().create_app(auth_settings=AuthSettings(mode="disabled"))
+    async def stream_run_events(self, request: RunGatewayStreamRunEventsRequest) -> str:
+        return ""
+
+    async def version(self, request: RunGatewayVersionRequest) -> VersionInfo:
+        return ...
+
+app = MyRunGateway().create_app(auth_settings=AuthSettings(mode="disabled"))
 ```
 
 ## Service base classes
 
-- `BaseRuntimeServer`
-- `BaseToolRegistryServer`
-- `BaseDaemonServer`
+- `BaseRunGatewayServer`
+- `BaseRunCoordinatorServer`
+- `BaseAtomicExecutorServer`
+- `BaseCompositeExecutorServer`
+- `BaseNodeRegistryServer`
+- `BaseSelectionServer`
+- `BasePdpServer`
 
 ## Request objects
 
@@ -45,14 +74,16 @@ Base server classes use `ABC` + `@abstractmethod`. Instantiating a class that do
 ## Authentication (JWT Bearer)
 
 ```python
-app = MyDaemon().create_app(
+app = MyRunGateway().create_app(
     auth_settings=AuthSettings(
         mode="required",
         issuer="https://issuer.example.com/realms/arp",
-        audience="arp-daemon",
+        audience="arp-run-gateway",
     )
 )
 ```
+
+See also: [`docs/security-profiles.md`](../../docs/security-profiles.md) for the standard auth configuration profiles (`Dev-Insecure`, `Dev-Secure-Keycloak`, `Enterprise`).
 
 ## Streaming (NDJSON)
 

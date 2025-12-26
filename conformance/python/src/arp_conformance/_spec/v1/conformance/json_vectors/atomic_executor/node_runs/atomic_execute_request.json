@@ -1,0 +1,9 @@
+{
+  "inputs": {},
+  "node_run_id": "example",
+  "node_type_ref": {
+    "node_type_id": "example",
+    "version": "example"
+  },
+  "run_id": "example"
+}

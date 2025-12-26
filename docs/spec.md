@@ -14,6 +14,7 @@ The normative contract lives under [`spec/v1/`](../spec/v1/README.md).
 - **Versioned paths:** all HTTP endpoints are rooted at `/v1/...`.
 - **Errors:** non-2xx responses should return an `ErrorEnvelope`.
 - **Validation:** request validation errors should return HTTP 400 with an `ErrorEnvelope`.
+- **Security:** APIs use `Authorization: Bearer <JWT>` (see [`docs/security-profiles.md`](security-profiles.md)).
 - **Extensions:** many payloads include an `extensions` map for vendor-specific fields.
 - **Endpoints:** endpoint fields use URI strings (for example `http://127.0.0.1:43120`).
 

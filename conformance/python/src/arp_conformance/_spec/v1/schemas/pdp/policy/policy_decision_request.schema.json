@@ -1,0 +1,16 @@
+{
+  "title": "PolicyDecisionRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action"],
+  "properties": {
+    "action": { "type": "string" },
+    "run_id": { "type": "string" },
+    "node_run_id": { "type": "string" },
+    "node_type_ref": { "$ref": "../../core/node_type_ref.schema.json" },
+    "run_context": { "$ref": "../../core/run_context.schema.json" },
+    "constraints": { "$ref": "../../core/constraint_envelope.schema.json" },
+    "context": { "type": "object", "additionalProperties": true },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}

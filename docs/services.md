@@ -1,46 +1,74 @@
 # Services
 
-ARP defines three primary HTTP services. Each must implement `GET /v1/health` and `GET /v1/version`.
+ARP defines node-centric HTTP services. Each service must implement `GET /v1/health` and `GET /v1/version`.
 
-## Tool Registry
+## Run Gateway
 
-Purpose: tool discovery + invocation.
-
-Required endpoints:
-
-- `GET /v1/tools`
-- `GET /v1/tools/{tool_id}`
-- `POST /v1/tool-invocations`
-
-## Runtime
-
-Purpose: execute runs.
+Purpose: client-facing run API.
 
 Required endpoints:
 
 - `POST /v1/runs`
 - `GET /v1/runs/{run_id}`
-- `GET /v1/runs/{run_id}/result`
-
-Optional endpoints (not required for conformance):
-
 - `POST /v1/runs/{run_id}:cancel`
+
+Optional endpoints:
+
 - `GET /v1/runs/{run_id}/events`
 
-## Daemon
+## Run Coordinator
 
-Purpose: manage runtime instances and route runs to them.
+Purpose: run authority for NodeRun lifecycle, graph patches, evaluation, and completion.
 
 Required endpoints:
 
-- Instances: `GET /v1/instances`, `POST /v1/instances`, `DELETE /v1/instances/{instance_id}`
-- External instances: `POST /v1/instances:register`
-- Runtime profiles (safe list): `GET /v1/admin/runtime-profiles`, `PUT /v1/admin/runtime-profiles/{runtime_profile}`, `DELETE /v1/admin/runtime-profiles/{runtime_profile}`
-- Runs: `GET /v1/runs`, `POST /v1/runs`, `GET /v1/runs/{run_id}`, `GET /v1/runs/{run_id}/result`
+- `POST /v1/node-runs`
+- `GET /v1/node-runs/{node_run_id}`
+- `POST /v1/graph-patches`
+- `POST /v1/node-runs/{node_run_id}:evaluation`
+- `POST /v1/node-runs/{node_run_id}:complete`
 
-Optional endpoint (not required for conformance):
+## Atomic Executor
 
-- `GET /v1/runs/{run_id}/trace`
+Purpose: execute atomic NodeRuns.
+
+Required endpoints:
+
+- `POST /v1/atomic-node-runs:execute`
+
+## Composite Executor
+
+Purpose: begin composite NodeRun assignments.
+
+Required endpoints:
+
+- `POST /v1/composite-node-runs:begin`
+
+## Node Registry
+
+Purpose: publish and retrieve NodeType definitions.
+
+Required endpoints:
+
+- `GET /v1/node-types`
+- `POST /v1/node-types`
+- `GET /v1/node-types/{node_type_id}`
+
+## Selection
+
+Purpose: generate bounded candidate sets for subtasks.
+
+Required endpoints:
+
+- `POST /v1/candidate-sets`
+
+## PDP (optional component)
+
+Purpose: standard policy decision API if a PDP is deployed.
+
+Required endpoints (when implemented):
+
+- `POST /v1/policy:decide`
 
 ## See also
 

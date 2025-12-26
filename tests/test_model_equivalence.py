@@ -47,14 +47,25 @@ class TestModelEquivalence(unittest.TestCase):
         repo_root = Path(__file__).resolve().parents[1]
         spec_root = repo_root / "spec" / "v1"
         cls.schemas_root = spec_root / "schemas"
+        services = [
+            "run_gateway",
+            "run_coordinator",
+            "atomic_executor",
+            "composite_executor",
+            "node_registry",
+            "selection",
+            "pdp",
+        ]
         cls.valid_roots = [
-            spec_root / "conformance" / "json_vectors" / "runtime",
-            spec_root / "conformance" / "json_vectors" / "tool_registry",
+            spec_root / "conformance" / "json_vectors" / service for service in services
         ]
         cls.invalid_roots = [
-            spec_root / "conformance" / "json_vectors_invalid" / "runtime",
-            spec_root / "conformance" / "json_vectors_invalid" / "tool_registry",
+            spec_root / "conformance" / "json_vectors_invalid" / service for service in services
         ]
+        cls.valid_roots = [root for root in cls.valid_roots if root.exists()]
+        cls.invalid_roots = [root for root in cls.invalid_roots if root.exists()]
+        if not cls.valid_roots and not cls.invalid_roots:
+            raise unittest.SkipTest("No conformance vectors found for v1 spec")
 
     def _assert_valid(self, instance_path: Path, root: Path) -> None:
         schema_path = _schema_for(instance_path, root, self.schemas_root)

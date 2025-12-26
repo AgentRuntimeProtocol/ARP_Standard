@@ -1,0 +1,31 @@
+{
+  "title": "NodeRun",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_run_id", "run_id", "node_type_ref", "state"],
+  "properties": {
+    "node_run_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "node_type_ref": { "$ref": "node_type_ref.schema.json" },
+    "kind": { "$ref": "node_kind.schema.json" },
+    "parent_node_run_id": { "type": "string" },
+    "state": { "$ref": "node_run_state.schema.json" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "started_at": { "type": "string", "format": "date-time" },
+    "ended_at": { "type": "string", "format": "date-time" },
+    "inputs": { "type": "object", "additionalProperties": true },
+    "outputs": { "type": "object", "additionalProperties": true },
+    "output_artifacts": {
+      "type": "array",
+      "items": { "$ref": "../common/resource_ref.schema.json" }
+    },
+    "executor_binding": { "$ref": "executor_binding.schema.json" },
+    "evaluation_result": { "$ref": "evaluation_result.schema.json" },
+    "recovery_actions": {
+      "type": "array",
+      "items": { "$ref": "recovery_action.schema.json" }
+    },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

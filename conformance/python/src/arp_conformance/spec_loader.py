@@ -16,9 +16,13 @@ class Endpoint:
 @dataclass(frozen=True)
 class RequiredEndpoints:
     common: list[Endpoint]
-    runtime: list[Endpoint]
-    tool_registry: list[Endpoint]
-    daemon: list[Endpoint]
+    run_gateway: list[Endpoint]
+    run_coordinator: list[Endpoint]
+    atomic_executor: list[Endpoint]
+    composite_executor: list[Endpoint]
+    node_registry: list[Endpoint]
+    selection: list[Endpoint]
+    pdp: list[Endpoint]
     optional: list[Endpoint]
 
 
@@ -73,17 +77,25 @@ def load_required_endpoints(*, spec_path: Path | None = None, version: str = "v1
 
     section: str | None = None
     common: list[Endpoint] = []
-    runtime: list[Endpoint] = []
-    tool_registry: list[Endpoint] = []
-    daemon: list[Endpoint] = []
+    run_gateway: list[Endpoint] = []
+    run_coordinator: list[Endpoint] = []
+    atomic_executor: list[Endpoint] = []
+    composite_executor: list[Endpoint] = []
+    node_registry: list[Endpoint] = []
+    selection: list[Endpoint] = []
+    pdp: list[Endpoint] = []
     optional: list[Endpoint] = []
 
     def target() -> list[Endpoint] | None:
         return {
             "common": common,
-            "runtime": runtime,
-            "tool_registry": tool_registry,
-            "daemon": daemon,
+            "run_gateway": run_gateway,
+            "run_coordinator": run_coordinator,
+            "atomic_executor": atomic_executor,
+            "composite_executor": composite_executor,
+            "node_registry": node_registry,
+            "selection": selection,
+            "pdp": pdp,
             "optional": optional,
         }.get(section or "")
 
@@ -94,14 +106,26 @@ def load_required_endpoints(*, spec_path: Path | None = None, version: str = "v1
         if line.startswith("All services MUST implement"):
             section = "common"
             continue
-        if line.startswith("Tool Registry MUST implement"):
-            section = "tool_registry"
+        if line.startswith("Run Gateway MUST implement"):
+            section = "run_gateway"
             continue
-        if line.startswith("Runtime MUST implement"):
-            section = "runtime"
+        if line.startswith("Run Coordinator MUST implement"):
+            section = "run_coordinator"
             continue
-        if line.startswith("Daemon MUST implement"):
-            section = "daemon"
+        if line.startswith("Atomic Executor MUST implement"):
+            section = "atomic_executor"
+            continue
+        if line.startswith("Composite Executor MUST implement"):
+            section = "composite_executor"
+            continue
+        if line.startswith("Node Registry MUST implement"):
+            section = "node_registry"
+            continue
+        if line.startswith("Selection MUST implement"):
+            section = "selection"
+            continue
+        if line.startswith("PDP MUST implement"):
+            section = "pdp"
             continue
         if line.startswith("Optional"):
             section = "optional"
@@ -116,9 +140,13 @@ def load_required_endpoints(*, spec_path: Path | None = None, version: str = "v1
 
     return RequiredEndpoints(
         common=common,
-        runtime=runtime,
-        tool_registry=tool_registry,
-        daemon=daemon,
+        run_gateway=run_gateway,
+        run_coordinator=run_coordinator,
+        atomic_executor=atomic_executor,
+        composite_executor=composite_executor,
+        node_registry=node_registry,
+        selection=selection,
+        pdp=pdp,
         optional=optional,
     )
 
@@ -126,8 +154,8 @@ def load_required_endpoints(*, spec_path: Path | None = None, version: str = "v1
 def normalize_spec_root(spec_path: Path, *, version: str) -> Path:
     """
     Accept either:
-    - a `spec/` directory (containing `v1/`), or
-    - a repo root directory (containing `spec/v1/`).
+    - a `spec/` directory (containing `<version>/`), or
+    - a repo root directory (containing `spec/<version>/`).
     """
 
     direct = spec_path / version / "schemas"

@@ -204,6 +204,26 @@ class TestAuthSettings(_AuthTestBase):
         self.assertEqual(settings.clock_skew_seconds, 60)
         self.assertEqual(settings.exempt_paths, ("/v1/health", "/v1/version"))
 
+    def test_from_env_dev_insecure_profile_sets_disabled(self) -> None:
+        settings = self.auth.AuthSettings.from_env({"ARP_AUTH_PROFILE": "dev-insecure"})
+        self.assertEqual(settings.mode, "disabled")
+
+    def test_from_env_dev_secure_keycloak_profile_sets_defaults(self) -> None:
+        settings = self.auth.AuthSettings.from_env(
+            {"ARP_AUTH_PROFILE": "dev-secure-keycloak", "ARP_AUTH_SERVICE_ID": "arp-run-gateway"}
+        )
+        self.assertEqual(settings.mode, "required")
+        self.assertEqual(settings.issuer, "http://localhost:8080/realms/arp-dev")
+        self.assertEqual(settings.audience, "arp-run-gateway")
+
+    def test_from_env_dev_secure_keycloak_profile_requires_audience(self) -> None:
+        with self.assertRaises(ValueError):
+            self.auth.AuthSettings.from_env({"ARP_AUTH_PROFILE": "dev-secure-keycloak"})
+
+    def test_from_env_invalid_profile_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            self.auth.AuthSettings.from_env({"ARP_AUTH_PROFILE": "nope"})
+
     def test_from_env_invalid_mode(self) -> None:
         with self.assertRaises(ValueError):
             self.auth.AuthSettings.from_env({"ARP_AUTH_MODE": "invalid"})

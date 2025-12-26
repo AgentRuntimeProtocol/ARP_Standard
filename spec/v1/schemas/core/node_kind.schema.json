@@ -1,0 +1,6 @@
+{
+  "title": "NodeKind",
+  "type": "string",
+  "enum": ["atomic", "composite"]
+}
+

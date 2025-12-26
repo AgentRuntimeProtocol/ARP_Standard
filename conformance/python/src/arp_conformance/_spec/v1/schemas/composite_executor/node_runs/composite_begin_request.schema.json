@@ -1,0 +1,18 @@
+{
+  "title": "CompositeBeginRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["node_run_id", "run_id", "node_type_ref", "inputs", "coordinator_endpoint"],
+  "properties": {
+    "node_run_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "node_type_ref": { "$ref": "../../core/node_type_ref.schema.json" },
+    "inputs": { "type": "object", "additionalProperties": true },
+    "run_context": { "$ref": "../../core/run_context.schema.json" },
+    "constraints": { "$ref": "../../core/constraint_envelope.schema.json" },
+    "coordinator_endpoint": { "$ref": "../../common/endpoint_locator.schema.json" },
+    "assignment_token": { "type": "string" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}
+

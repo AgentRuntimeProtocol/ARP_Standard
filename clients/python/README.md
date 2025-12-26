@@ -9,25 +9,27 @@ python3 -m pip install arp-standard-client
 ## Usage
 
 ```python
-from arp_standard_client.daemon import DaemonClient
+from arp_standard_client.run_gateway import RunGatewayClient
 from arp_standard_model import (
-    DaemonCreateInstancesRequest,
-    DaemonHealthRequest,
-    DaemonListInstancesRequest,
-    DaemonListRunsParams,
-    DaemonListRunsRequest,
-    InstanceCreateRequestBody,
+    NodeTypeRef,
+    RunGatewayHealthRequest,
+    RunGatewayStartRunRequest,
+    RunStartRequest,
 )
 
-client = DaemonClient(base_url="http://127.0.0.1:8082", bearer_token="your-jwt")
-health = client.health(DaemonHealthRequest())
-instances = client.list_instances(DaemonListInstancesRequest())
-created = client.create_instances(
-    DaemonCreateInstancesRequest(
-        body=InstanceCreateRequestBody(runtime_profile="default", count=1)
+client = RunGatewayClient(base_url="http://127.0.0.1:8080", bearer_token="your-jwt")
+health = client.health(RunGatewayHealthRequest())
+run = client.start_run(
+    RunGatewayStartRunRequest(
+        body=RunStartRequest(
+            root_node_type_ref=NodeTypeRef(
+                node_type_id="example.com/node-types/my-root",
+                version="1.0.0",
+            ),
+            input={"goal": "Hello, ARP"},
+        )
     )
 )
-runs = client.list_runs(DaemonListRunsRequest(params=DaemonListRunsParams(page_size=50)))
 ```
 
 ### Request objects
@@ -37,8 +39,8 @@ All facade methods require a single request object from `arp_standard_model`. Th
 - `params`: path/query parameters (if any)
 - `body`: JSON request body (if any)
 
-Request and params models are service-prefixed (e.g., `DaemonListRunsRequest`, `RuntimeGetRunStatusRequest`) to avoid collisions.
-Request body models are also exported with a `*RequestBody` alias (e.g., `InstanceCreateRequestBody`).
+Request and params models are service-prefixed (e.g., `RunGatewayGetRunRequest`, `NodeRegistryListNodeTypesRequest`) to avoid collisions.
+Request body models are also exported with a `*RequestBody` alias (e.g., `RunStartRequestBody`).
 
 ### Wire format
 
@@ -47,8 +49,8 @@ Models use the exact JSON field names from the spec (no aliasing). When serializ
 ## Authentication (JWT Bearer)
 
 ```python
-client = DaemonClient(
-    base_url="http://127.0.0.1:8082",
+client = RunGatewayClient(
+    base_url="http://127.0.0.1:8080",
     bearer_token="your-jwt",
 )
 ```
@@ -58,12 +60,12 @@ client = DaemonClient(
 Streaming endpoints currently return NDJSON as plain text. Helpers are planned but not implemented yet.
 
 ```python
-from arp_standard_client.runtime import RuntimeClient
-from arp_standard_model import RuntimeStreamRunEventsParams, RuntimeStreamRunEventsRequest
+from arp_standard_client.run_gateway import RunGatewayClient
+from arp_standard_model import RunGatewayStreamRunEventsParams, RunGatewayStreamRunEventsRequest
 
-runtime = RuntimeClient(base_url="http://127.0.0.1:8081", bearer_token="your-jwt")
-text = runtime.get_run_events(
-    RuntimeStreamRunEventsRequest(params=RuntimeStreamRunEventsParams(run_id=run_id))
+gateway = RunGatewayClient(base_url="http://127.0.0.1:8080", bearer_token="your-jwt")
+text = gateway.stream_run_events(
+    RunGatewayStreamRunEventsRequest(params=RunGatewayStreamRunEventsParams(run_id=run_id))
 )
 for line in text.splitlines():
     if not line:
@@ -73,13 +75,14 @@ for line in text.splitlines():
 
 ## Spec reference
 
-`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.2.6`) used to generate the package.
+`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.0`) used to generate the package.
 
 ## See also
 
 ### General Documentation
 - Spec (normative): [`spec/v1/`](../../spec/v1/README.md)
 - Docs index: [`docs/README.md`](../../docs/README.md)
+- Security profiles (auth configuration): [`docs/security-profiles.md`](../../docs/security-profiles.md)
 - Repository README: [`README.md`](../../README.md)
 
 ### Python Specific Documentation

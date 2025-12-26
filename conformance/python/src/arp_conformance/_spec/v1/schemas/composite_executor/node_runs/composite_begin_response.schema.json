@@ -1,0 +1,12 @@
+{
+  "title": "CompositeBeginResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["accepted"],
+  "properties": {
+    "accepted": { "type": "boolean" },
+    "message": { "type": "string" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}
+

@@ -64,9 +64,13 @@ def main() -> int:
     openapi_root = spec_root / "openapi"
 
     services = {
-        "daemon": openapi_root / "daemon.openapi.yaml",
-        "runtime": openapi_root / "runtime.openapi.yaml",
-        "tool_registry": openapi_root / "tool-registry.openapi.yaml",
+        "run_gateway": openapi_root / "run-gateway.openapi.yaml",
+        "run_coordinator": openapi_root / "run-coordinator.openapi.yaml",
+        "atomic_executor": openapi_root / "atomic-executor.openapi.yaml",
+        "composite_executor": openapi_root / "composite-executor.openapi.yaml",
+        "node_registry": openapi_root / "node-registry.openapi.yaml",
+        "selection": openapi_root / "selection.openapi.yaml",
+        "pdp": openapi_root / "pdp.openapi.yaml",
     }
 
     lines: list[str] = [f"ARP codegen report ({args.version})", ""]

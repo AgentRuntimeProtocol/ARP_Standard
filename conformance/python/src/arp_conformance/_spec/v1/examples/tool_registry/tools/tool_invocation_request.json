@@ -1,8 +1,0 @@
-{
-  "invocation_id": "inv_123",
-  "tool_name": "echo",
-  "args": {
-    "text": "hello"
-  }
-}
-

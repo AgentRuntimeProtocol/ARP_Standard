@@ -1,0 +1,25 @@
+{
+  "title": "TaskGraph",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["revision"],
+  "properties": {
+    "revision": { "type": "integer", "minimum": 0 },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "extensions": { "$ref": "../common/extensions.schema.json" }
+  }
+}
+

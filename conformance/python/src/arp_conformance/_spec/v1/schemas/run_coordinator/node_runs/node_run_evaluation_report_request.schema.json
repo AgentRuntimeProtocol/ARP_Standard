@@ -1,0 +1,11 @@
+{
+  "title": "NodeRunEvaluationReportRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evaluation_result"],
+  "properties": {
+    "evaluation_result": { "$ref": "../../core/evaluation_result.schema.json" },
+    "recovery_action": { "$ref": "../../core/recovery_action.schema.json" },
+    "extensions": { "$ref": "../../common/extensions.schema.json" }
+  }
+}
