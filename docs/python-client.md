@@ -89,6 +89,12 @@ req = RunGatewayGetRunRequest(params=RunGatewayGetRunParams(run_id="run_123"))
 resp = client.get_run(req)
 ```
 
+## Response payloads
+
+Client methods return the spec-defined payload objects directly (for example: `Run`, `Health`, `VersionInfo`) rather
+than service-specific `*Response` wrappers. For forward-compatible additions, use `extensions` (and `metadata` where
+available); arbitrary top-level fields are not allowed by the schemas (`additionalProperties: false`).
+
 ## Wire format and serialization
 
 Models use the exact JSON field names from the spec (no aliasing). When you need to serialize manually, use `model_dump(exclude_none=True)`.

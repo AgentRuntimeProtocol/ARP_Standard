@@ -67,6 +67,12 @@ All server methods accept a single request object from `arp_standard_model`:
 - `*RequestBody` for JSON bodies
 - `*Request` wrappers with `params` and/or `body`
 
+## Response payloads
+
+Server methods return the spec-defined payload objects directly (for example: `Run`, `Health`, `VersionInfo`) rather
+than service-specific `*Response` wrappers. For forward-compatible additions, use `extensions` (and `metadata` where
+available); arbitrary top-level fields are not allowed by the schemas (`additionalProperties: false`).
+
 ## Abstract method enforcement
 
 Base server classes use `ABC` + `@abstractmethod`. Instantiating a class that does not implement all required endpoints raises a `TypeError` before the app is created.

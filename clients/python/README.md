@@ -42,6 +42,12 @@ All facade methods require a single request object from `arp_standard_model`. Th
 Request and params models are service-prefixed (e.g., `RunGatewayGetRunRequest`, `NodeRegistryListNodeTypesRequest`) to avoid collisions.
 Request body models are also exported with a `*RequestBody` alias (e.g., `RunStartRequestBody`).
 
+### Response payloads
+
+Client methods return the spec-defined payload objects directly (for example: `Run`, `Health`, `VersionInfo`) rather
+than service-specific `*Response` wrappers. For forward-compatible additions, use `extensions` (and `metadata` where
+available); arbitrary top-level fields are not allowed by the schemas (`additionalProperties: false`).
+
 ### Wire format
 
 Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(exclude_none=True)`.
