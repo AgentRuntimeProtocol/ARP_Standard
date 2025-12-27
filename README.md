@@ -13,6 +13,10 @@
 
 <div align="center">
 
+  <a href="https://pypi.org/project/arp-standard-model/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-model?label=arp-standard-model" alt="Version - Model"></a>
+  <a href="https://pypistats.org/packages/arp-standard-model" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-model" alt="PyPI - Downloads - Model"></a>
+  <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-model" alt="PyPI - License"></a>
+
   <a href="https://pypi.org/project/arp-standard-server/#history" target="_blank"><img src="https://img.shields.io/pypi/v/arp-standard-server?label=arp-standard-server" alt="Version - Server"></a>
   <a href="https://pypistats.org/packages/arp-standard-server" target="_blank"><img src="https://img.shields.io/pepy/dt/arp-standard-server" alt="PyPI - Downloads - Server"></a>
   <a href="https://opensource.org/licenses/MIT" target="_blank"><img src="https://img.shields.io/pypi/l/arp-standard-server" alt="PyPI - License"></a>
