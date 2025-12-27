@@ -1,0 +1,5 @@
+{
+  "title": "NodeRunTerminalState",
+  "type": "string",
+  "enum": ["succeeded", "failed", "canceled"]
+}

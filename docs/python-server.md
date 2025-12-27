@@ -113,4 +113,4 @@ python3 tools/codegen/python/server/generate.py --version v1
 
 ## Spec reference
 
-`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.0`) used to generate the package.
+`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.1`) used to generate the package.

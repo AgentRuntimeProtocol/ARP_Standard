@@ -71,6 +71,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/atomic-node-runs/{node_run_id}:cancel:
+    post:
+      summary: Cancel atomic NodeRun (optional)
+      operationId: cancel_atomic_node_run
+      tags: [atomic_node_runs]
+      parameters:
+        - name: node_run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Canceled (or cancellation requested)
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
 components:
   securitySchemes:
     ArpBearerJWT:

@@ -342,9 +342,6 @@ class ConformanceRunner:
             expects_success_schema = "schemas/run_coordinator/node_runs/node_runs_create_response.schema.json"
         elif method == "GET" and endpoint.path_template == "/v1/node-runs/{node_run_id}":
             expects_success_schema = "schemas/core/node_run.schema.json"
-        elif method == "POST" and endpoint.path_template == "/v1/graph-patches":
-            json_body = {}
-            expects_success_schema = "schemas/run_coordinator/graph/graph_patch_submit_response.schema.json"
         elif method == "POST" and endpoint.path_template == "/v1/node-runs/{node_run_id}:evaluation":
             json_body = {}
             expects_no_content = True

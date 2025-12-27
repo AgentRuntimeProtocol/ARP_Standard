@@ -64,6 +64,14 @@ def main() -> int:
     _run([sys.executable, "tools/conformance/sync_spec.py", "--version", args.version], cwd=repo_root)
 
     if args.clean:
+        for target in (
+            model_root / "build",
+            client_root / "build",
+            server_root / "build",
+            conformance_root / "build",
+        ):
+            if target.exists():
+                shutil.rmtree(target)
         for target in (model_dist_dir, client_dist_dir, server_dist_dir, conformance_dist_dir):
             if not target.exists():
                 continue

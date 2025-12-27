@@ -140,7 +140,7 @@ paths:
             type: string
       responses:
         "200":
-          description: NDJSON stream. Each line contains a JSON RunEvent payload.
+          description: NDJSON stream. Each line contains a JSON RunEvent payload, ordered by seq for the run.
           content:
             application/x-ndjson:
               schema:

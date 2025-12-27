@@ -2,12 +2,15 @@
   "title": "NodeRunCompleteRequest",
   "type": "object",
   "additionalProperties": false,
+  "required": ["state"],
   "properties": {
+    "state": { "$ref": "../../core/node_run_terminal_state.schema.json" },
     "outputs": { "type": "object", "additionalProperties": true },
     "output_artifacts": {
       "type": "array",
       "items": { "$ref": "../../common/resource_ref.schema.json" }
     },
+    "error": { "$ref": "../../common/error_detail.schema.json" },
     "extensions": { "$ref": "../../common/extensions.schema.json" }
   }
 }

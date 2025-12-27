@@ -4,7 +4,7 @@ Stable, versioned HTTP+JSON contracts for ARP/EP vNext.
 
 `v1` defines the node-centric component boundaries described in `Business_Docs/ARP_HLD.md`.
 
-Draft release tag: `v0.3.0` (see `CHANGELOG.md`).
+Draft release tag: `v0.3.1` (see `CHANGELOG.md`).
 
 ## Contents
 

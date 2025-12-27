@@ -9,13 +9,18 @@ Run Gateway MUST implement:
 - `GET /v1/runs/{run_id}`
 - `POST /v1/runs/{run_id}:cancel`
 
-Optional (Run Gateway):
+Optional:
 - `GET /v1/runs/{run_id}/events`
+- `GET /v1/node-runs/{node_run_id}/events`
+- `POST /v1/atomic-node-runs/{node_run_id}:cancel`
+- `POST /v1/composite-node-runs/{node_run_id}:cancel`
 
 Run Coordinator MUST implement:
+- `POST /v1/runs`
+- `GET /v1/runs/{run_id}`
+- `POST /v1/runs/{run_id}:cancel`
 - `POST /v1/node-runs`
 - `GET /v1/node-runs/{node_run_id}`
-- `POST /v1/graph-patches`
 - `POST /v1/node-runs/{node_run_id}:evaluation`
 - `POST /v1/node-runs/{node_run_id}:complete`
 

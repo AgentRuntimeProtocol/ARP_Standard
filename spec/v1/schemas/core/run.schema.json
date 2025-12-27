@@ -8,10 +8,8 @@
     "state": { "$ref": "run_state.schema.json" },
     "root_node_run_id": { "type": "string" },
     "run_context": { "$ref": "run_context.schema.json" },
-    "graph_state": { "$ref": "task_graph.schema.json" },
     "started_at": { "type": "string", "format": "date-time" },
     "ended_at": { "type": "string", "format": "date-time" },
     "extensions": { "$ref": "../common/extensions.schema.json" }
   }
 }
-

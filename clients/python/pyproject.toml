@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arp-standard-client"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python client package for the ARP Standard (v1)."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,7 +15,7 @@ dependencies = [
   "attrs>=22.2.0",
   "httpx>=0.23.0",
   "python-dateutil>=2.8.1",
-  "arp-standard-model==0.3.0",
+  "arp-standard-model==0.3.1",
 ]
 
 [project.urls]

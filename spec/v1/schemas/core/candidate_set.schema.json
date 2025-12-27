@@ -2,8 +2,9 @@
   "title": "CandidateSet",
   "type": "object",
   "additionalProperties": false,
-  "required": ["subtask_id", "candidates"],
+  "required": ["candidate_set_id", "subtask_id", "candidates"],
   "properties": {
+    "candidate_set_id": { "type": "string" },
     "subtask_id": { "type": "string" },
     "candidates": {
       "type": "array",
@@ -15,4 +16,3 @@
     "extensions": { "$ref": "../common/extensions.schema.json" }
   }
 }
-

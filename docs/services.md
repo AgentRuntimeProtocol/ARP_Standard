@@ -18,15 +18,22 @@ Optional endpoints:
 
 ## Run Coordinator
 
-Purpose: run authority for NodeRun lifecycle, graph patches, evaluation, and completion.
+Purpose: run authority for NodeRun lifecycle, evaluation, and completion.
 
 Required endpoints:
 
+- `POST /v1/runs`
+- `GET /v1/runs/{run_id}`
+- `POST /v1/runs/{run_id}:cancel`
 - `POST /v1/node-runs`
 - `GET /v1/node-runs/{node_run_id}`
-- `POST /v1/graph-patches`
 - `POST /v1/node-runs/{node_run_id}:evaluation`
 - `POST /v1/node-runs/{node_run_id}:complete`
+
+Optional endpoints:
+
+- `GET /v1/runs/{run_id}/events`
+- `GET /v1/node-runs/{node_run_id}/events`
 
 ## Atomic Executor
 
@@ -36,6 +43,10 @@ Required endpoints:
 
 - `POST /v1/atomic-node-runs:execute`
 
+Optional endpoints:
+
+- `POST /v1/atomic-node-runs/{node_run_id}:cancel`
+
 ## Composite Executor
 
 Purpose: begin composite NodeRun assignments.
@@ -43,6 +54,10 @@ Purpose: begin composite NodeRun assignments.
 Required endpoints:
 
 - `POST /v1/composite-node-runs:begin`
+
+Optional endpoints:
+
+- `POST /v1/composite-node-runs/{node_run_id}:cancel`
 
 ## Node Registry
 

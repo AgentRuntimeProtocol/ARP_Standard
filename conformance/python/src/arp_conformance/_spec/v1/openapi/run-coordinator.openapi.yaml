@@ -43,6 +43,118 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/runs:
+    post:
+      summary: Start run
+      operationId: start_run
+      tags: [runs]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunStartRequest"
+      responses:
+        "200":
+          description: Run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/runs/{run_id}:
+    get:
+      summary: Get run
+      operationId: get_run
+      tags: [runs]
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/runs/{run_id}:cancel:
+    post:
+      summary: Cancel run
+      operationId: cancel_run
+      tags: [runs]
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Run
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Run"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
+  /v1/runs/{run_id}/events:
+    get:
+      summary: Stream run events (optional)
+      operationId: stream_run_events
+      tags: [runs]
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: NDJSON stream. Each line contains a JSON RunEvent payload, ordered by seq for the run.
+          content:
+            application/x-ndjson:
+              schema:
+                type: string
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorEnvelope"
   /v1/node-runs:
     post:
       summary: Create NodeRuns (subtasks)
@@ -99,24 +211,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelope"
-  /v1/graph-patches:
-    post:
-      summary: Submit a graph patch (decomposition mutation)
-      operationId: submit_graph_patch
-      tags: [graph]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/GraphPatchSubmitRequest"
+  /v1/node-runs/{node_run_id}/events:
+    get:
+      summary: Stream NodeRun events (optional)
+      operationId: stream_node_run_events
+      tags: [node_runs]
+      parameters:
+        - name: node_run_id
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         "200":
-          description: Submit response
+          description: NDJSON stream. Each line contains a JSON RunEvent payload for this NodeRun and its descendants, ordered by seq.
           content:
-            application/json:
+            application/x-ndjson:
               schema:
-                $ref: "#/components/schemas/GraphPatchSubmitResponse"
+                type: string
         "401":
           $ref: "#/components/responses/UnauthorizedError"
         "403":
@@ -217,16 +329,16 @@ components:
       $ref: ../schemas/common/version_info.schema.json
     ErrorEnvelope:
       $ref: ../schemas/common/error.schema.json
+    RunStartRequest:
+      $ref: ../schemas/run_gateway/runs/run_start_request.schema.json
+    Run:
+      $ref: ../schemas/core/run.schema.json
     NodeRun:
       $ref: ../schemas/core/node_run.schema.json
     NodeRunsCreateRequest:
       $ref: ../schemas/run_coordinator/node_runs/node_runs_create_request.schema.json
     NodeRunsCreateResponse:
       $ref: ../schemas/run_coordinator/node_runs/node_runs_create_response.schema.json
-    GraphPatchSubmitRequest:
-      $ref: ../schemas/run_coordinator/graph/graph_patch_submit_request.schema.json
-    GraphPatchSubmitResponse:
-      $ref: ../schemas/run_coordinator/graph/graph_patch_submit_response.schema.json
     NodeRunEvaluationReportRequest:
       $ref: ../schemas/run_coordinator/node_runs/node_run_evaluation_report_request.schema.json
     NodeRunCompleteRequest:
