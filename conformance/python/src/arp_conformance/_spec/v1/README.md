@@ -1,10 +1,10 @@
 # ARP Standard — `v1` (Node-Centric, Draft)
 
-Stable, versioned HTTP+JSON contracts for ARP/EP vNext.
+Stable, versioned HTTP+JSON contracts for ARP Standard v1.
 
-`v1` defines the node-centric component boundaries described in `Business_Docs/ARP_HLD.md`.
+`v1` defines the node-centric component boundaries described in `BusinessDocs/Business_Docs/ARP/ARP_HLD.md`.
 
-Draft release tag: `v0.3.1` (see `CHANGELOG.md`).
+Draft release tag: `v0.3.3` (see `CHANGELOG.md`).
 
 ## Contents
 

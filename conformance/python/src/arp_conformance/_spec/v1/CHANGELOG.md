@@ -1,6 +1,6 @@
 # Changelog — `v1`
 
-## v0.3.1 (draft)
+## v0.3.3 (draft)
 
 - Removed task graph / graph patch surface (`TaskGraph`, `GraphPatch`, `POST /v1/graph-patches`).
 - Added Run lifecycle endpoints to Run Coordinator (`POST/GET /v1/runs`, `POST /v1/runs/{run_id}:cancel`).
