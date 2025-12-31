@@ -1,4 +1,5 @@
 import json
+import sys
 import unittest
 import warnings
 from pathlib import Path
@@ -10,8 +11,6 @@ except ImportError:  # pragma: no cover - optional in local envs
     jsonschema = None
 
 from pydantic import ValidationError
-
-import arp_standard_model as models
 
 
 def _load_json(path: Path) -> Any:
@@ -45,6 +44,19 @@ class TestModelEquivalence(unittest.TestCase):
             raise unittest.SkipTest("jsonschema not installed")
 
         repo_root = Path(__file__).resolve().parents[1]
+        generated = repo_root / "models" / "python" / "src" / "arp_standard_model" / "_generated.py"
+        requests = repo_root / "models" / "python" / "src" / "arp_standard_model" / "_requests.py"
+        if not generated.exists() or not requests.exists():
+            raise unittest.SkipTest("Generated models missing; run codegen before tests.")
+
+        cls.paths = [repo_root / "models" / "python" / "src"]
+        for path in cls.paths:
+            sys.path.insert(0, str(path))
+
+        import arp_standard_model as models  # noqa: E402
+
+        cls.models = models
+
         spec_root = repo_root / "spec" / "v1"
         cls.schemas_root = spec_root / "schemas"
         services = [
@@ -67,6 +79,14 @@ class TestModelEquivalence(unittest.TestCase):
         if not cls.valid_roots and not cls.invalid_roots:
             raise unittest.SkipTest("No conformance vectors found for v1 spec")
 
+    @classmethod
+    def tearDownClass(cls) -> None:
+        for path in getattr(cls, "paths", []):
+            try:
+                sys.path.remove(str(path))
+            except ValueError:
+                pass
+
     def _assert_valid(self, instance_path: Path, root: Path) -> None:
         schema_path = _schema_for(instance_path, root, self.schemas_root)
         self.assertTrue(schema_path.exists(), f"Missing schema for {instance_path}")
@@ -78,7 +98,7 @@ class TestModelEquivalence(unittest.TestCase):
         schema = _load_json(schema_path)
         title = schema.get("title")
         self.assertTrue(title, f"Schema missing title: {schema_path}")
-        model = getattr(models, title, None)
+        model = getattr(self.models, title, None)
         self.assertIsNotNone(model, f"Model not found for schema title {title}")
 
         try:
@@ -97,7 +117,7 @@ class TestModelEquivalence(unittest.TestCase):
         schema = _load_json(schema_path)
         title = schema.get("title")
         self.assertTrue(title, f"Schema missing title: {schema_path}")
-        model = getattr(models, title, None)
+        model = getattr(self.models, title, None)
         self.assertIsNotNone(model, f"Model not found for schema title {title}")
 
         with self.assertRaises(ValidationError):
