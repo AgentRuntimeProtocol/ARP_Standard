@@ -95,7 +95,7 @@ FastAPI request validation errors are mapped to an ARP `ErrorEnvelope` with HTTP
 
 ## Wire format and serialization
 
-Requests and responses use the exact JSON field names from the spec (no aliasing). When you serialize models manually, use `model_dump(exclude_none=True)`.
+Requests and responses use the exact JSON field names from the spec (no aliasing). When you serialize models manually, use `model_dump(mode="json", exclude_none=True)`.
 
 ## Abstract method enforcement
 
@@ -119,4 +119,4 @@ python3 tools/codegen/python/server/generate.py --version v1
 
 ## Spec reference
 
-`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.5`) used to generate the package.
+`arp_standard_server.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.7`) used to generate the package.

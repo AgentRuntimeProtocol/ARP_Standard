@@ -50,7 +50,7 @@ available); arbitrary top-level fields are not allowed by the schemas (`addition
 
 ### Wire format
 
-Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(exclude_none=True)`.
+Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(mode="json", exclude_none=True)`.
 
 ## Authentication (JWT Bearer)
 
@@ -81,7 +81,7 @@ for line in text.splitlines():
 
 ## Spec reference
 
-`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.5`) used to generate the package.
+`arp_standard_client.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.7`) used to generate the package.
 
 ## See also
 

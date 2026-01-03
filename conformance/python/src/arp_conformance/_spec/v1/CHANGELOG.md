@@ -1,5 +1,9 @@
 # Changelog — `v1`
 
+## v0.3.7 (draft)
+
+- Python SDKs: serialize request bodies with `model_dump(mode="json", exclude_none=True)` to support `AnyUrl` fields.
+
 ## v0.3.5 (draft)
 
 - Removed task graph / graph patch surface (`TaskGraph`, `GraphPatch`, `POST /v1/graph-patches`).

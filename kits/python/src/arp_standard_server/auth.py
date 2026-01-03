@@ -132,7 +132,7 @@ def _unauthorized(*, error: str, message: str, details: dict[str, Any] | None = 
     envelope = _error_envelope(code="unauthorized", message=message, details=details)
     return JSONResponse(
         status_code=401,
-        content=envelope.model_dump(exclude_none=True),
+        content=envelope.model_dump(mode="json", exclude_none=True),
         headers={"WWW-Authenticate": _bearer_challenge(error=error, description=message)},
     )
 

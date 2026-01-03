@@ -24,7 +24,7 @@ class TestPatchClientToPydantic(unittest.TestCase):
         updated = _patch_text(original)
         self.assertIn("from arp_standard_model import Bar", updated)
         self.assertIn("from arp_standard_model import Baz", updated)
-        self.assertIn(".model_dump(exclude_none=True)", updated)
+        self.assertIn(".model_dump(mode=\"json\", exclude_none=True)", updated)
         self.assertIn(".model_validate(", updated)
         self.assertNotIn("by_alias=True", updated)
 
@@ -48,7 +48,7 @@ class TestPatchClientToPydantic(unittest.TestCase):
             _patch_tree(service_root)
 
             self.assertIn("from arp_standard_model import Bar", target.read_text(encoding="utf-8"))
-            self.assertIn("model_dump(exclude_none=True)", target.read_text(encoding="utf-8"))
+            self.assertIn("model_dump(mode=\"json\", exclude_none=True)", target.read_text(encoding="utf-8"))
             self.assertIn("from ..models.foo import Bar", init_file.read_text(encoding="utf-8"))
             self.assertIn("from ..models.foo import Bar", models_file.read_text(encoding="utf-8"))
 

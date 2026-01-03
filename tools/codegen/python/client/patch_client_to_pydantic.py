@@ -13,10 +13,10 @@ _MODEL_PACKAGE_IMPORT_RE = re.compile(r"^from\s+\.+models\s+import\s+(.+)$", re.
 def _patch_text(text: str) -> str:
     text = _MODEL_IMPORT_RE.sub(r"from arp_standard_model import \1", text)
     text = _MODEL_PACKAGE_IMPORT_RE.sub(r"from arp_standard_model import \1", text)
-    text = text.replace(".to_dict()", ".model_dump(exclude_none=True)")
+    text = text.replace(".to_dict()", ".model_dump(mode=\"json\", exclude_none=True)")
     text = text.replace(".from_dict(", ".model_validate(")
-    text = re.sub(r"model_dump\(\s*by_alias=True,\s*", "model_dump(", text)
-    text = re.sub(r"model_dump\(\s*by_alias=True\s*\)", "model_dump()", text)
+    text = re.sub(r"model_dump\(\s*by_alias=True,\s*", "model_dump(mode=\"json\", ", text)
+    text = re.sub(r"model_dump\(\s*by_alias=True\s*\)", "model_dump(mode=\"json\")", text)
     return text
 
 

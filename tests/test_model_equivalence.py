@@ -24,6 +24,8 @@ def _schema_for(instance_path: Path, root: Path, schemas_root: Path) -> Path:
 
 
 def _validate_jsonschema(schema_path: Path, instance: Any) -> list[str]:
+    if jsonschema is None:
+        raise RuntimeError("jsonschema not installed")
     schema = _load_json(schema_path)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore", DeprecationWarning)
@@ -100,6 +102,7 @@ class TestModelEquivalence(unittest.TestCase):
         self.assertTrue(title, f"Schema missing title: {schema_path}")
         model = getattr(self.models, title, None)
         self.assertIsNotNone(model, f"Model not found for schema title {title}")
+        assert model is not None
 
         try:
             model.model_validate(instance)
@@ -119,6 +122,7 @@ class TestModelEquivalence(unittest.TestCase):
         self.assertTrue(title, f"Schema missing title: {schema_path}")
         model = getattr(self.models, title, None)
         self.assertIsNotNone(model, f"Model not found for schema title {title}")
+        assert model is not None
 
         with self.assertRaises(ValidationError):
             model.model_validate(instance)

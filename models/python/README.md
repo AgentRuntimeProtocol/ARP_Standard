@@ -25,11 +25,11 @@ req = RunGatewayGetRunRequest(params=RunGatewayGetRunParams(run_id="run_123"))
 
 ## Wire format
 
-Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(exclude_none=True)`.
+Models use the exact JSON field names from the spec (no aliasing). When serializing manually, use `model_dump(mode="json", exclude_none=True)`.
 
 ## Spec reference
 
-`arp_standard_model.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.5`) used to generate the package.
+`arp_standard_model.SPEC_REF` exposes the spec tag (for example, `spec/v1@v0.3.7`) used to generate the package.
 
 ## See also
 

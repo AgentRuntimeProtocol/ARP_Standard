@@ -546,7 +546,7 @@ def generate_facade(*, service: str, bundled_openapi: dict[str, Any], output_dir
             "        _raise_for_error_envelope(",
             "            envelope=parsed,",
             "            status_code=int(response.status_code),",
-            "            raw=parsed.model_dump(exclude_none=True),",
+            "            raw=parsed.model_dump(mode=\"json\", exclude_none=True),",
             "        )",
             "    return parsed",
             "",

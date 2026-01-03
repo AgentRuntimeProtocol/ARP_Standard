@@ -85,7 +85,7 @@ arp-conformance check all \
 ### Example output (text)
 
 ```text
-service=run-gateway tier=surface spec=spec/v1@v0.3.5
+service=run-gateway tier=surface spec=spec/v1@v0.3.7
 counts={'PASS': 5, 'FAIL': 0, 'WARN': 0, 'SKIP': 0} ok=True
 - PASS smoke.health: OK
 - PASS smoke.version: OK
@@ -108,7 +108,7 @@ arp-conformance check run-gateway --url http://localhost:8080 --tier surface --f
 Rule of thumb: pin `arp-conformance==X.Y.Z` to validate services targeting the ARP spec / SDK release `X.Y.Z`.
 
 ```bash
-pipx install "arp-conformance==0.3.5"
+pipx install "arp-conformance==0.3.7"
 arp-conformance --version
 python -c "import arp_conformance; print(arp_conformance.SPEC_REF)"
 ```
@@ -152,7 +152,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Start your service under test (docker compose, process, etc) before running conformance.
-      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.3.5
+      - uses: AgentRuntimeProtocol/ARP_Standard/.github/actions/arp-conformance@v0.3.7
         with:
           service: run-gateway
           url: http://localhost:8080

@@ -16,7 +16,7 @@ __all__ = [
     "ArpApiError",
 ]
 
-__version__ = "0.3.5"
-SPEC_REF = "spec/v1@v0.3.5"
+__version__ = "0.3.7"
+SPEC_REF = "spec/v1@v0.3.7"
 
 from .errors import ArpApiError  # noqa: E402

@@ -34,7 +34,7 @@ run = client.start_run(
         )
     )
 )
-print(run.model_dump(exclude_none=True))
+print(run.model_dump(mode="json", exclude_none=True))
 ```
 
 ## Authentication (JWT Bearer)
@@ -97,7 +97,7 @@ available); arbitrary top-level fields are not allowed by the schemas (`addition
 
 ## Wire format and serialization
 
-Models use the exact JSON field names from the spec (no aliasing). When you need to serialize manually, use `model_dump(exclude_none=True)`.
+Models use the exact JSON field names from the spec (no aliasing). When you need to serialize manually, use `model_dump(mode="json", exclude_none=True)`.
 
 ## Forward compatibility
 
@@ -105,7 +105,7 @@ Models ignore unknown fields by default (Pydantic v2 behavior), so newer servers
 
 ## Spec reference
 
-Each package exports `SPEC_REF` (for example, `spec/v1@v0.3.5`) to indicate the spec tag used to generate the package.
+Each package exports `SPEC_REF` (for example, `spec/v1@v0.3.7`) to indicate the spec tag used to generate the package.
 
 ## Generate locally (developers)
 
@@ -129,8 +129,8 @@ python3 tools/codegen/python/client/generate.py --version v1
 2. Tag the release:
 
 ```bash
-git tag v0.3.5
-git push origin v0.3.5
+git tag v0.3.7
+git push origin v0.3.7
 ```
 
 ## See also

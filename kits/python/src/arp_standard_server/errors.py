@@ -42,7 +42,7 @@ class ArpServerError(Exception):
 def _envelope_response(envelope: ErrorEnvelope, status_code: int) -> JSONResponse:
     return JSONResponse(
         status_code=status_code,
-        content=envelope.model_dump(exclude_none=True),
+        content=envelope.model_dump(mode="json", exclude_none=True),
     )
 
 

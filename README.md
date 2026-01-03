@@ -164,7 +164,7 @@ run = client.start_run(
         )
     )
 )
-print(run.model_dump(exclude_none=True))
+print(run.model_dump(mode="json", exclude_none=True))
 ```
 
 ### Server example (FastAPI)
