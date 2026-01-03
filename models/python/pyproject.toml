@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "arp-standard-model"
-version = "0.3.3"
+version = "0.3.4"
 description = "Pydantic models for the ARP Standard (v1)."
 readme = "README.md"
 requires-python = ">=3.11"
