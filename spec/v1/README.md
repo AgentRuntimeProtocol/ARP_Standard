@@ -4,7 +4,7 @@ Stable, versioned HTTP+JSON contracts for ARP Standard v1.
 
 `v1` defines the node-centric component boundaries described in `BusinessDocs/Business_Docs/ARP/ARP_HLD.md`.
 
-Draft release tag: `v0.3.4` (see `CHANGELOG.md`).
+Draft release tag: `v0.3.5` (see `CHANGELOG.md`).
 
 ## Contents
 
